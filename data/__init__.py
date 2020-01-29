@@ -34,6 +34,9 @@ vla_data = pd.DataFrame(vla_data, columns=["mjd", "frequency", "flux", "flux_err
 xray_path = os.path.join(data_dir, "bran_lx_Swift.dat")
 xray_data = pd.read_table(xray_path, sep="\s+")
 
+xray_ul_path = os.path.join(data_dir, "bran_lx_Swift_ul.dat")
+xray_ul_data = pd.read_table(xray_ul_path, sep="\s+")
+
 gamma_path = os.path.join(data_dir, "TDE_uls_FermiLAT")
 gamma_data = pd.read_table(gamma_path, sep=",")
 
