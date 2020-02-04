@@ -1,5 +1,6 @@
 import numpy as np
 from astropy.coordinates import Distance
+from astropy import units as u
 from data import bran_z
 
 def convert_radio(flux_mjy, frequency_ghz):
@@ -15,3 +16,26 @@ dl = Distance(z=bran_z).to("cm").value
 area = 4 * np.pi * (dl ** 2)
 
 flux_conversion = 1./area
+
+colors = {
+    "r.IOO": "r",
+    "r.ZTF": "r",
+    "r.SEDm": "r",
+    "g.ZTF": "g",
+    "g.IOO": "g",
+    "UVW2": "violet",
+    "UVM2": "purple",
+    "UVW1": "darkblue",
+    "U": "lightblue",
+
+}
+
+bands = {
+    "U": 3465 * u.angstrom,
+    "UVW1": 2600 * u.angstrom,
+    "UVM2": 2246 * u.angstrom,
+    "UVW2": 1928 * u.angstrom,
+    "g.ZTF": 464 * u.nm,
+    "r.ZTF": 658 * u.nm,
+    "r.SEDm": 658 * u.nm,
+}

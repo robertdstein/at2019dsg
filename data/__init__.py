@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from astropy.time import Time
+from astropy import units as u
 import pandas as pd
 import numpy as np
 
@@ -39,6 +40,9 @@ xray_ul_data = pd.read_table(xray_ul_path, sep="\s+")
 
 gamma_path = os.path.join(data_dir, "TDE_uls_FermiLAT")
 gamma_data = pd.read_table(gamma_path, sep=",")
+
+gamma_data["UL(95)"] *= (1.* u.MeV).to("erg").value
+gamma_deintegrate = np.log(800/0.1)
 
 # =================================
 # ASASSN-14li data
