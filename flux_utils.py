@@ -37,5 +37,5 @@ bands = {
     "UVW2": 1928 * u.angstrom,
     "g.ZTF": 464 * u.nm,
     "r.ZTF": 658 * u.nm,
-    "r.SEDm": 658 * u.nm,
+    # "r.SEDm": 658 * u.nm,
 }

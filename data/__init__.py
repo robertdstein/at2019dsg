@@ -16,9 +16,6 @@ bran_z = 0.0512
 photometry_path = os.path.join(data_dir, "BranStark.dat")
 photometry_data = pd.read_table(photometry_path, skiprows=4, sep="\s+")
 
-meerkat_path = os.path.join(data_dir, "at2019dsg_MeerKAT.txt")
-meerkat_data = pd.read_table(meerkat_path, sep="\s+")
-
 radio_data_files = [x for x in os.listdir(data_dir) if "at2019dsg_20" in x]
 vla_data = []
 for x in radio_data_files:
@@ -31,6 +28,75 @@ for x in radio_data_files:
             vla_data.append(tuple([obs_date.mjd] + [float(x) for x in line.split(" ")]))
 
 vla_data = pd.DataFrame(vla_data, columns=["mjd", "frequency", "flux", "flux_err"])
+radio_data = vla_data.copy()
+radio_data = radio_data.assign(instrument="VLA")
+
+
+meerkat_path = os.path.join(data_dir, "at2019dsg_MeerKAT.txt")
+meerkat_data = pd.read_table(meerkat_path, sep="\s+")
+meerkat_data = meerkat_data.assign(
+    mjd=meerkat_data["#mjd"],
+    flux=meerkat_data["flux_mJy"],
+    flux_err=meerkat_data["flux_err_mJy"],
+    instrument="MeerKAT",
+    frequency=1.4
+)
+
+ami_path = os.path.join(data_dir, "AT2019dsg_AMI.csv")
+ami_data = pd.read_table(ami_path, sep=",")
+
+mjds = []
+for i, row in enumerate(ami_data.iterrows()):
+    t = ami_data["Start Date"][i]
+    x = t.split(" ")[0].split("/")
+    date = "T".join(["-".join([x[2], x[0], x[1]]), t.split(" ")[1]])
+    date = Time(date, format="isot")
+    mjds.append(date.mjd)
+
+ami_data = ami_data.assign(
+    mjd=mjds,
+    flux=ami_data["Peak"] * 1.e-3,
+    flux_err=ami_data["Peak Error"] * 1.e-3,
+    instrument="AMI-LA",
+    frequency=15.5
+)
+
+merlin_path = os.path.join(data_dir, "at2019dsg_eMERLIN.txt")
+merlin_data = pd.read_table(merlin_path, sep="\s+")
+merlin_data = merlin_data.assign(
+    mjd=Time(merlin_data["#date"][0], format="isot").mjd,
+    instrument="eMERLIN",
+    frequency=5.07
+)
+
+keys = ["mjd", "frequency", "flux", "flux_err", "instrument"]
+
+radio_data = pd.concat(
+    [
+        radio_data,
+        merlin_data[keys],
+        ami_data[keys],
+        meerkat_data[keys]
+    ],
+    sort=True,
+    ignore_index=True
+)
+
+radio_qs_epochs = None
+
+for x in radio_data["mjd"]:
+    if radio_qs_epochs is None:
+        radio_qs_epochs = np.array([float(x)])
+
+    else:
+
+        mask = abs(radio_qs_epochs - x) < 2.
+
+        if np.sum(mask) > 0:
+            radio_qs_epochs = np.append(radio_qs_epochs, radio_qs_epochs[mask][0])
+        else:
+            radio_qs_epochs = np.append(radio_qs_epochs, x)
+
 
 xray_path = os.path.join(data_dir, "bran_lx_Swift.dat")
 xray_data = pd.read_table(xray_path, sep="\s+")
@@ -78,3 +144,12 @@ xmmsl1_data = np.array([
 ])
 
 xmmsl1_z = 0.0173
+
+gfu_ehe_path = os.path.join(data_dir, "Aeff_ehe_gfu.csv")
+aeff_ehe_gfu = pd.read_csv(gfu_ehe_path, names=["E_TeV", "A_eff"])
+
+ehe_path = os.path.join(data_dir, "Aeff_ehe.csv")
+aeff_ehe = pd.read_csv(ehe_path, names=["E_TeV", "A_eff"])
+
+hese_path = os.path.join(data_dir, "Aeff_hese.csv")
+aeff_hese = pd.read_csv(hese_path, names=["E_TeV", "A_eff"])
