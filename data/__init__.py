@@ -74,7 +74,7 @@ keys = ["mjd", "frequency", "flux", "flux_err", "instrument"]
 radio_data = pd.concat(
     [
         radio_data,
-        merlin_data[keys],
+        # merlin_data[keys],
         ami_data[keys],
         meerkat_data[keys]
     ],
