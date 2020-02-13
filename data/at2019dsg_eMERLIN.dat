@@ -1,0 +1,6 @@
+# from http://www.astronomerstelegram.org/?read=12960
+# flux at 5.07 GHz
+# negative flux is non-detection ar 3sigma
+date mjd flux_mJy flux_err_mJy
+2019-06-03 58637 0.100 -1
+2019-06-20 58654 0.354 0.023
