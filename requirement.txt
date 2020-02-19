@@ -1,0 +1,9 @@
+matplotlib
+astropy
+scipy
+numpy
+pandas
+git+https://github.com/sjoertvv/sjoert@master
+requests
+catsHTM
+git+https://github.com/pschella/k3match@master

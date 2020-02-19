@@ -108,7 +108,7 @@ plt.xlabel('R (cm)')
 plt.ylabel('B (G)')
 plt.savefig('./plots/at2019dsg_RB.pdf')
 
-fname = 'at2019dsg_RB_fit_p{0:0.1f}.dat'.format(p_electron_single)
+fname = './data/at2019dsg_RB_fit_p{0:0.1f}.dat'.format(p_electron_single)
 sjoert.io.writecols(cols=[R_single[:,0],R_single[:,1], B_single[:,0], B_single[:,1]],
 	filename=fname,
 	names=['R_cm', 'eR_cm', 'B_Gauss', 'eB_Gauss'], delimiter=',')

@@ -57,7 +57,6 @@ def equipartition_beta(peak_f_ghz, peak_flux_mjy, delta_t, f_a=1.0, z=bran_z):
 
     return 1./ (1. + f)
 
-
 peak_f = []
 peak_flux = []
 dates = []
