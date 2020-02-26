@@ -3,6 +3,7 @@ import glob
 import datetime
 import astropy.time
 import astropy.io.ascii
+import numpy as np
 
 ami = astropy.io.ascii.read('./data/at2019dsg_AMI.csv', delimiter=',')
 

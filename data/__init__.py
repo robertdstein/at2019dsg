@@ -25,6 +25,7 @@ for x in radio_data_files:
                         scale='utc')
         for line in f.readlines():
             line = line.replace("\n", "")
+            line = line.replace("#", "")
             vla_data.append(tuple([obs_date.mjd] + [float(x) for x in line.split(" ")]))
 
 vla_data = pd.DataFrame(vla_data, columns=["mjd", "frequency", "flux", "flux_err"])
@@ -98,11 +99,33 @@ for x in radio_data["mjd"]:
             radio_qs_epochs = np.append(radio_qs_epochs, x)
 
 
-xray_path = os.path.join(data_dir, "bran_lx_Swift.dat")
-xray_data = pd.read_table(xray_path, sep="\s+")
+xrt_path = os.path.join(data_dir, "bran_lx_Swift.dat")
+xrt_data = pd.read_table(xrt_path, sep="\s+")
 
-xray_ul_path = os.path.join(data_dir, "bran_lx_Swift_ul.dat")
-xray_ul_data = pd.read_table(xray_ul_path, sep="\s+")
+xray_data = xrt_data.copy()
+xray_data = xray_data.assign(instrument="XRT", UL=False, MJD=xray_data["#MJD"])
+
+xrt_ul_path = os.path.join(data_dir, "bran_lx_Swift_ul.dat")
+xrt_ul_data = pd.read_table(xrt_ul_path, sep="\s+")
+xrt_ul_data = xrt_ul_data.assign(instrument="XRT", UL=True, MJD=xrt_ul_data["#MJD"])
+
+xmm_path = os.path.join(data_dir, "at2019dsg_xmm.dat")
+xmm_data = pd.read_table(xmm_path, sep="\s+")
+
+xmm_ul = np.array([np.isnan(x) for x in xmm_data["tbb_kev"]])
+xmm_mjd = [Time(f"{x}T00:00:00", format="isot").mjd for x in xmm_data["#date"]]
+
+xmm_data = xmm_data.assign(instrument="XMM", UL=xmm_ul, MJD=xmm_mjd)
+
+xray_data = pd.concat([
+    xray_data,
+    xrt_ul_data,
+    xmm_data
+],
+    sort = True,
+    ignore_index = True
+)
+
 
 gamma_path = os.path.join(data_dir, "TDE_uls_FermiLAT")
 gamma_data = pd.read_table(gamma_path, sep=",")
@@ -153,3 +176,6 @@ aeff_ehe = pd.read_csv(ehe_path, names=["E_TeV", "A_eff"])
 
 hese_path = os.path.join(data_dir, "Aeff_hese.csv")
 aeff_hese = pd.read_csv(hese_path, names=["E_TeV", "A_eff"])
+
+spectra_dir = os.path.join(data_dir, "ZTF19aapreis_spectra")
+spectra_paths = sorted([os.path.join(spectra_dir, x) for x in os.listdir(spectra_dir) if "ZTF19aapreis" in x])
