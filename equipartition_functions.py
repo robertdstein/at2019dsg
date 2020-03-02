@@ -20,7 +20,8 @@ fit_all = True
 i_obs = 60/180.*pi
 
 gamma_max = 1e4
-p_electron = 2.2
+gamma_min=1
+p_electron = 3
 
 # some defaults
 min_z = 100*3e5*1e6 # min inner jet radius 
@@ -44,7 +45,7 @@ z = 0.0512 # Bran...
 D = sjoert.stellar.lumdis(z, h=0.7)
 
 def sync99(nu0, B, r, D=D, p_electron=p_electron, Knorm=1.,
-			gamma_max=gamma_max, gamma_min=1.0, 
+			gamma_max=gamma_max, gamma_min=gamma_min, 
 			eps_e=1, filling_factor=1, delta=1):
 
 	
@@ -56,7 +57,7 @@ def sync99(nu0, B, r, D=D, p_electron=p_electron, Knorm=1.,
 	#return r**2 / (4*D**2) * eps1/kap1 * ( 1+np.exp(-kap1*r)*(r*kap1/6-1) )
 
 def tau(nu0, B, r, p_electron=p_electron,
-			gamma_max=gamma_max, gamma_min=1.0, Knorm=1,
+			gamma_max=gamma_max, gamma_min=gamma_min, Knorm=1,
 			eps_e=1, filling_factor=1, delta=1):
 	
 	nu = nu0/delta
@@ -72,14 +73,15 @@ def tau(nu0, B, r, p_electron=p_electron,
 
 
 def model_single(nu, B,r):
-	#m = sync99(nu, B,r, p_electron=p_electron_single, gamma_max=gamma_max_single)
-	m = model_sum(nu, B, r, v_jet=v_jet, p_electron=p_electron_single, gamma_max0=gamma_max_single, phi=phi, Lindex=1e99)
+	m = sync99(nu, B,r, p_electron=p_electron_single, gamma_max=gamma_max_single, gamma_min=gamma_min)
+	#m = model_sum(nu, B, r, Lindex=5,
+	#		v_jet=v_jet, p_electron=p_electron_single, gamma_max0=gamma_max_single, gamma_min0=gamma_min, phi=phi)
 	return m
 
 # sum of sperical sync blobs inside a conical geometry
 nnr = 50
-def model_sum(nu, B0, r0, Knorm0=1., gamma_max0=gamma_max, phi=phi, Qindex=Qindex, Gindex=Gindex, Lindex=Lindex, 
-				v_jet=v_jet, i_obs=i_obs, p_electron=p_electron,sparse_fact=sparse_fact,
+def model_sum(nu, B0, r0, Knorm0=1., gamma_max0=gamma_max,gamma_min0=gamma_min, phi=phi, Qindex=Qindex, Gindex=Gindex, Lindex=Lindex, 
+				v_jet=v_jet, i_obs=i_obs, p_electron=p_electron, sparse_fact=sparse_fact,
 				return_array=False, bump=0):
 
 	this_delta = sjoert.stellar.Doppler(sjoert.stellar.beta2gamma(v_jet),i_obs=i_obs)
@@ -152,15 +154,15 @@ def model_sum(nu, B0, r0, Knorm0=1., gamma_max0=gamma_max, phi=phi, Qindex=Qinde
 
 	for i in range(len(rr)):
 		m[i,:] = sync99(nu, B[i], rr[i], 
-							Knorm=Knorm1[i], gamma_max=gamma_max0, p_electron=p_electron, delta=this_delta) 
+							Knorm=Knorm1[i], gamma_max=gamma_max0,gamma_min=gamma_min0, p_electron=p_electron, delta=this_delta) 
 		if return_array:
-			tau_out[i,:] = tau(nu, B[i], rr[i], delta=this_delta, gamma_max=gamma_max0, p_electron=p_electron)
+			tau_out[i,:] = tau(nu, B[i], rr[i], delta=this_delta, gamma_max=gamma_max0,gamma_min=gamma_min0, p_electron=p_electron)
 	
 	for i in range(len(rr_counter)):
 		m_counter[i,:] = sync99(nu, B_counter[i], rr_counter[i],
-							Knorm=Knorm1_counter[i], gamma_max=gamma_max0, p_electron=p_electron, delta=this_delta_counter)
+							Knorm=Knorm1_counter[i], gamma_max=gamma_max0,gamma_min=gamma_min0, p_electron=p_electron, delta=this_delta_counter)
 		if return_array:
-			tau_out_counter[i,:] = tau(nu, B[i], rr[i], delta=this_delta_counter, gamma_max=gamma_max0, p_electron=p_electron)
+			tau_out_counter[i,:] = tau(nu, B[i], rr[i], delta=this_delta_counter, gamma_max=gamma_max0,gamma_min=gamma_min0, p_electron=p_electron)
 
 	if return_array:
 		return rr, rr_counter, m,m_counter, tau_out, tau_out_counter

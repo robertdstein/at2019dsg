@@ -13,9 +13,9 @@ from equipartition_functions import *
 
 data_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
 
-data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.1*data_rec['flux_mJy'], 1e99) # force errors?
+data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.05*data_rec['flux_mJy'], 1e99) # force errors?
 
-mjd_plot = np.array([58625, 58653, 58703, 58761]) #58818
+mjd_plot = np.array([58625, 58653, 58703, 58761, ]) # 58818, not this last epoch has only MeerKAT and AMI data
 
 B_single = np.zeros((len(mjd_plot),2))
 B_sum = np.zeros((len(mjd_plot),2))
@@ -31,6 +31,13 @@ p0 = [np.log10(0.9*1e16/R0), 60, 0.6, -1.00, 5/3., 2.0]
 
 
 plt.clf()
+
+plt.xlim(1.0,25) 
+plt.ylim(0.02, 2)
+plt.yscale('log')
+plt.xscale('log')
+
+
 for i, mjd in enumerate(mjd_plot): 
 	
 	it = abs(data_rec['mjd']-mjd)<10
@@ -38,19 +45,19 @@ for i, mjd in enumerate(mjd_plot):
 
 	if sum(ii)>1:
 		nu = data_rec[ii]['nu_GHz']
-		Fnu = data_rec[ii]['flux_mJy'] - 0.05
+		Fnu = data_rec[ii]['flux_mJy'] - 0.05 #* (data_rec[ii]['nu_GHz']/1.4)**(-0.5)
 		Fnu_err = data_rec[ii]['eflux_mJy'] 
 
 		p0 = [0.1, 1e16]
 		lsq = leastsq(res_single, p0, (nu*1e9, Fnu, Fnu_err), full_output=True)
 		#p0 = [lsq[0][0], lsq[0][1]] # guess next initial parameters
 
-		if lsq[1] is not None:
-			print ('''single-zone:\nB={0:0.3f} +/- {1:0.3f} G\nd=({2:0.2f} +/- {3:0.2f})x10^16 cm'''.format(lsq[0][0],  sqrt(lsq[1][0][0]), lsq[0][1]/1e16, sqrt(lsq[1][1][1])/1e16)		)
+		#if lsq[1] is not None:
+		print ('''single-zone:\nB={0:0.3f} +/- {1:0.3f} G\nd=({2:0.2f} +/- {3:0.2f})x10^16 cm'''.format(lsq[0][0],  sqrt(lsq[1][0][0]), lsq[0][1]/1e16, sqrt(lsq[1][1][1])/1e16)		)
 
-			B_single[i,:], R_single[i,:] = (lsq[0][0],  sqrt(lsq[1][0][0])), (lsq[0][1], sqrt(lsq[1][1][1]))
-		if len(p0)>2: 
-			print ('p={0:0.2f} +/- {1:0.2f}'.format(lsq[0][2],sqrt(lsq[1][2,2])))
+		B_single[i,:], R_single[i,:] = (lsq[0][0],  sqrt(lsq[1][0][0])), (lsq[0][1], sqrt(lsq[1][1][1]))
+		# if len(p0)>2: 
+		# 	print ('p={0:0.2f} +/- {1:0.2f}'.format(lsq[0][2],sqrt(lsq[1][2,2])))
 		
 		B_single[i,:], R_single[i,:] = (lsq[0][0],  sqrt(lsq[1][0][0])), (lsq[0][1], sqrt(lsq[1][1][1]))
 
@@ -60,7 +67,7 @@ for i, mjd in enumerate(mjd_plot):
 		# plt.errorbar(data_rec[ii]['nu_GHz'], data_rec[ii]['flux_mJy'], fmt='v', zorder=10-i, alpha=0.8, color=line[0].get_color())
 
 		#plot single-comp model
-		xx = np.logspace(9,10.5, 100)
+		xx = np.logspace(9,10.3, 100)
 		plt.plot(xx/1e9, fit_single(xx, lsq[0])*1e23*1e3,  '--',alpha=0.7, color=line[0].get_color()) #label=ll1
 		ll1=''		
 
@@ -74,16 +81,6 @@ for i, mjd in enumerate(mjd_plot):
 #p0 = [np.log10(0.9*1e16/R0), 60, 0.6, -1.00, 5/3., 2.0]
 
 plt.legend()
-
-plt.xlim(1.0,25) 
-plt.ylim(0.02, 2)
-plt.yscale('log')
-plt.xscale('log')
-
-for i in [1,2,3]:
-	print (mjd_plot[i]-mjd_plot[0], 'v/c from R_eq     (spherical emitting region):', (R_single[i,0]-R_single[i-1,0]) / ((mjd_plot[i]-mjd_plot[i-1])*3600*24) / 3e10) 
-print ('v/c for neutrino  (spherical emitting region):', (R_single[3,0]-1e15) / ((5)*3600*24) / 3e10) 
-
 plt.xlabel('Frequency (Ghz)')
 plt.ylabel('Flux (mJy)')
 plt.legend()
@@ -92,6 +89,12 @@ plt.pause(0.01)
 
 plt.savefig('./plots/at2019dsg_radio_singlefit.pdf')
 key = input()
+
+for i in [1,2,3]:
+	print (mjd_plot[i]-mjd_plot[0], 'v/c from R_eq     (spherical emitting region):', (R_single[i,0]-R_single[i-1,0]) / ((mjd_plot[i]-mjd_plot[i-1])*3600*24) / 3e10) 
+print ('v/c for neutrino  (spherical emitting region):', (R_single[3,0]-1e15) / ((5)*3600*24) / 3e10) 
+
+
 
 
 
@@ -108,7 +111,15 @@ plt.xlabel('R (cm)')
 plt.ylabel('B (G)')
 plt.savefig('./plots/at2019dsg_RB.pdf')
 
-fname = './data/at2019dsg_RB_fit_p{0:0.1f}.dat'.format(p_electron_single)
+plt.clf()
+E_eq = B_single[:,0]**2 / (8*pi) * R_single[:,0]**3 * 4/3.*pi
+plt.plot(mjd_plot-mjd_plot[0], E_eq, '-s')
+plt.xlabel('Time (day since first radio detection)')
+plt.ylabel('Equipartion energy (erg)')
+plt.pause(0.01)
+key = input()
+
+fname = 'at2019dsg_RB_fit_p{0:0.1f}.dat'.format(p_electron_single)
 sjoert.io.writecols(cols=[R_single[:,0],R_single[:,1], B_single[:,0], B_single[:,1]],
 	filename=fname,
 	names=['R_cm', 'eR_cm', 'B_Gauss', 'eB_Gauss'], delimiter=',')
