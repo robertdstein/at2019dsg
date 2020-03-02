@@ -4,6 +4,7 @@ import datetime
 import astropy.time
 import astropy.io.ascii
 import numpy as np
+import matplotlib.pyplot as plt
 
 ami = astropy.io.ascii.read('./data/at2019dsg_AMI.csv', delimiter=',')
 
