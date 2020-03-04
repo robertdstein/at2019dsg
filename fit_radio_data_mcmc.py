@@ -97,7 +97,7 @@ def model_func(p, mjd, nu, verbose=False):
 		print ('model single outout in mJy:', mout)
 
 	# add baseline flux
-	mout += Fbase0*(nu/1.4)**(Fbase1)
+	mout += Fbase0*(10**nu/1.4e9)**(Fbase1)
 
 	#print (mout)
 
@@ -245,7 +245,6 @@ if not(silent):
 # dump mcmc percentiles result
 import json
 json.dump(out_dict, open('./data/at2019dsg_mcmc.json', 'w'), indent=3)
-pickle.dump()
 
 # --- 
 # make nice SED plot
