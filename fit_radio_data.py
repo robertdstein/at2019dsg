@@ -45,7 +45,7 @@ for i, mjd in enumerate(mjd_plot):
 
 	if sum(ii)>1:
 		nu = data_rec[ii]['nu_GHz']
-		Fnu = data_rec[ii]['flux_mJy'] - 0.05 #* (data_rec[ii]['nu_GHz']/1.4)**(-0.5)
+		Fnu = data_rec[ii]['flux_mJy'] - 0.08 * (data_rec[ii]['nu_GHz']/1.4)**(-0.5)
 		Fnu_err = data_rec[ii]['eflux_mJy'] 
 
 		p0 = [0.1, 1e16]
@@ -60,6 +60,8 @@ for i, mjd in enumerate(mjd_plot):
 		# 	print ('p={0:0.2f} +/- {1:0.2f}'.format(lsq[0][2],sqrt(lsq[1][2,2])))
 		
 		B_single[i,:], R_single[i,:] = (lsq[0][0],  sqrt(lsq[1][0][0])), (lsq[0][1], sqrt(lsq[1][1][1]))
+		E_eq = B_single[i,0]**2 / (8*pi) * R_single[i,0]**3 * 4/3.*pi
+
 
 		lbl = sjoert.simtime.mjdtodate(np.mean(data_rec['mjd'][it])).strftime('%y/%m/%d')
 		line = plt.errorbar(nu, Fnu,Fnu_err, fmt='o', label=lbl, zorder=10-i, alpha=0.8)
@@ -73,6 +75,7 @@ for i, mjd in enumerate(mjd_plot):
 
 		print ('chi2:', sum(lsq[2]['fvec']**2)/(sum(ii)-len(p0)))
 		print ('cooling time at 16 GHz (day)', sync.cooling_extra(lsq[0][0], 16e9)/3600/24)
+		print ('energy in magnetic field', E_eq)
 		#print ('cooling time at 16*(t-300) GHz (day)', sync.cooling_extra(lsq[0][0], 16e9*np.clip(300-t,1,300))/3600/24)
 		plt.pause(0.01)
 
@@ -93,8 +96,6 @@ key = input()
 for i in [1,2,3]:
 	print (mjd_plot[i]-mjd_plot[0], 'v/c from R_eq     (spherical emitting region):', (R_single[i,0]-R_single[i-1,0]) / ((mjd_plot[i]-mjd_plot[i-1])*3600*24) / 3e10) 
 print ('v/c for neutrino  (spherical emitting region):', (R_single[3,0]-1e15) / ((5)*3600*24) / 3e10) 
-
-
 
 
 
