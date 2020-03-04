@@ -1,5 +1,5 @@
 import sjoert
-from sjoert import sync as sync_extra
+from sjoert import sync 
 from sjoert.stellar import beta2gamma, Doppler
 
 import numpy as np
@@ -9,6 +9,8 @@ from scipy.optimize import leastsq
 import calendar
 import scipy.interpolate
 import scipy.stats
+
+
 
 
 fit_all = True
@@ -22,20 +24,21 @@ i_obs = 60/180.*pi
 gamma_max = 1e4
 gamma_min=1
 p_electron = 3
+eps_e = 1
 
 # some defaults
 min_z = 100*3e5*1e6 # min inner jet radius 
 phi = 1/10.0
 #phi = 1/2.
 Qindex = 1.0	# scaling between Xray lum and Qjet, used for inserting bumps
-Lindex = 1.5 # how fast the jet power decreases with radius behing the jet head
+Lindex = 1.5 # how fast the jet power decreases with radius behind the jet head
 Gindex = -1.0 # geometry for B~r scaling (-1 for perfect conical jet)
-v_jet = 0.90
+v_jet = 0.5
 time0 = 60. # only used in move_jet
 R0 = 1e15
 sparse_fact = 0. # spacing between jet blobs
 
-p_electron_single= 2.8
+p_electron_single= 3.0
 gamma_max_single = 1e4
 
 this_delta = sjoert.stellar.Doppler(sjoert.stellar.beta2gamma(v_jet),i_obs=i_obs)
@@ -44,17 +47,66 @@ print ('Doppler factor:', this_delta)
 z = 0.0512 # Bran...
 D = sjoert.stellar.lumdis(z, h=0.7)
 
+
+# build lookup table
+BB = np.linspace(0.01, 100, 50)
+nunu = np.linspace(0.9, 20, 20)*1e9
+pp = np.linspace(1.9,3.1, 10)
+points =np.zeros( (len(nunu)*len(BB)*len(pp),3))
+alpha_values = np.zeros( (len(BB), len(nunu), len(pp)) )  
+Ptot_values = np.zeros( (len(BB), len(nunu), len(pp)) )  
+
+l=0
+for i in range(len(BB)):
+	for j in range(len(nunu)):
+		for k in range(len(pp)):
+			points[l,:] = np.log10(BB[i]), np.log10(nunu[j]), np.log10(pp[k])
+			alpha_values[i,j,k] = np.log10(sync.alpha_nu(BB[i],nunu[j], pp[k], gamma_max, gamma_min, eps_e)[0])
+			Ptot_values[i,j,k] = np.log10(sync.Ptot(BB[i],nunu[j], pp[k], gamma_max, gamma_min, eps_e)[0])
+			l+=1
+	print (len(BB)-i)
+
+
+import scipy.interpolate
+#interp_fun3 = scipy.interpolate.LinearNDInterpolator(points, values)
+interp_alpha = scipy.interpolate.RegularGridInterpolator( (np.log10(BB), np.log10(nunu), np.log10(pp)), alpha_values, bounds_error=False, fill_value=None)
+interp_Ptot = scipy.interpolate.RegularGridInterpolator( (np.log10(BB), np.log10(nunu), np.log10(pp)), Ptot_values, bounds_error=False, fill_value=None)
+print ('done building interpolator. testing:')
+for B in [0.2, 16]:
+	for nu in [1.5e9, 17e9]:
+		for p in [2.1,3.0]:
+			print (B, nu/1e9, p)
+			print ('diff alpha:', interp_alpha([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.alpha_nu(B, nu, p)))
+			print ('diff Ptot:', interp_Ptot([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.Ptot(B, nu, p)))
+
+
+
 def sync99(nu0, B, r, D=D, p_electron=p_electron, Knorm=1.,
 			gamma_max=gamma_max, gamma_min=gamma_min, 
-			eps_e=1, filling_factor=1, delta=1):
+			eps_e=1.0, filling_factor=1, delta=1, do_ana=False):
 
 	
 	nu1 = nu0/delta
 
-	kap1 = sync_extra.alpha_nu(B, nu1, p_electron, gamma_max, gamma_min, eps_e)
-	eps1 = sync_extra.Ptot(B, nu1, p_electron, gamma_max, gamma_min, eps_e)
+	kap1 = sync.alpha_nu(B, nu1, p_electron, gamma_max, gamma_min, eps_e)
+	eps1 = sync.Ptot(B, nu1, p_electron, gamma_max, gamma_min, eps_e)	
+
 	return delta**2 * r**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*r*filling_factor*Knorm) )	
 	#return r**2 / (4*D**2) * eps1/kap1 * ( 1+np.exp(-kap1*r)*(r*kap1/6-1) )
+
+def sync99_tab(nu0, B, r, p_electron, delta=1):
+	'''
+	same as sync99, but tabulate emission/absorption. 
+	input are 
+	'''
+	nu1 = nu0-np.log10(delta)
+
+	#print ('B in:', B)
+	kap1 = 10**interp_alpha([z for z in zip(B, nu1, p_electron)])
+	eps1 = 10**interp_Ptot([z for z in zip(B, nu1, p_electron)])
+	
+	return delta**2 * r**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*r) )	
+
 
 def tau(nu0, B, r, p_electron=p_electron,
 			gamma_max=gamma_max, gamma_min=gamma_min, Knorm=1,
@@ -63,19 +115,20 @@ def tau(nu0, B, r, p_electron=p_electron,
 	nu = nu0/delta
 	
 	if np.isscalar(B)==True:
-		return r * sync_extra.alpha_nu(B, nu, p_electron, gamma_max, gamma_min, eps_e)*Knorm
+		return r * sync.alpha_nu(B, nu, p_electron, gamma_max, gamma_min, eps_e)*Knorm
 
 	out = np.array(len(B))
 	for i in range(len(B)):
-		out[i] = r[i]*sync_extra.alpha_nu(B[i], nu[i], p_electron, gamma_max, gamma_min, eps_e)*Knorm[i]
+		out[i] = r[i]*sync.alpha_nu(B[i], nu[i], p_electron, gamma_max, gamma_min, eps_e)*Knorm[i]
 	return out
 
+def model_single_tab(nu, B,r, p_electron):
+	return sync99_tab(nu, B,r, p_electron)
 
-
-def model_single(nu, B,r):
-	m = sync99(nu, B,r, p_electron=p_electron_single, gamma_max=gamma_max_single, gamma_min=gamma_min)
-	#m = model_sum(nu, B, r, Lindex=5,
-	#		v_jet=v_jet, p_electron=p_electron_single, gamma_max0=gamma_max_single, gamma_min0=gamma_min, phi=phi)
+def model_single(nu, B,r, p_electron=p_electron_single, phi=phi, gamma_max0=gamma_max_single, gamma_min0=gamma_min):
+	m = sync99(nu, B,r, p_electron=p_electron_single, gamma_max=gamma_max0, gamma_min=gamma_min0)
+	# m = model_sum(nu, B, r, Lindex=10,
+	# 		v_jet=v_jet, p_electron=p_electron_single, gamma_max0=gamma_max_single, gamma_min0=gamma_min, phi=phi)
 	return m
 
 # sum of sperical sync blobs inside a conical geometry
