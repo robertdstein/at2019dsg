@@ -49,7 +49,7 @@ for i, mjd in enumerate(mjd_plot):
 		Fnu_err = data_rec[ii]['eflux_mJy'] 
 
 		p0 = [0.1, 1e16]
-		lsq = leastsq(res_single, p0, (nu*1e9, Fnu, Fnu_err), full_output=True)
+		lsq = leastsq(res_single, p0, (nu*1e9*(1+equipartition_functions.z), Fnu, Fnu_err), full_output=True)
 		#p0 = [lsq[0][0], lsq[0][1]] # guess next initial parameters
 
 		#if lsq[1] is not None:

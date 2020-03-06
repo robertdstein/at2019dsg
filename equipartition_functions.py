@@ -24,7 +24,7 @@ i_obs = 60/180.*pi
 gamma_max = 1e4
 gamma_min=1
 p_electron = 3
-eps_e = 1
+eps_e = 1 # this is actually epison_e/epison_B?
 
 # some defaults
 min_z = 100*3e5*1e6 # min inner jet radius 
@@ -91,8 +91,10 @@ def sync99(nu0, B, r, D=D, p_electron=p_electron, Knorm=1.,
 	kap1 = sync.alpha_nu(B, nu1, p_electron, gamma_max, gamma_min, eps_e)
 	eps1 = sync.Ptot(B, nu1, p_electron, gamma_max, gamma_min, eps_e)	
 
-	return delta**2 * r**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*r*filling_factor*Knorm) )	
-	#return r**2 / (4*D**2) * eps1/kap1 * ( 1+np.exp(-kap1*r)*(r*kap1/6-1) )
+	d = r*2
+	#return delta**2 * r**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*r) )	# circular area 
+	#return delta**2 * d**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*d*filling_factor*Knorm) )	# Spherical area  
+	return d**2 / (4*D**2) * eps1/kap1 * ( 1+np.exp(-kap1*d)*(d*kap1/6-1) ) # spherical (Heino)
 
 def sync99_tab(nu0, B, r, p_electron, delta=1):
 	'''
@@ -102,10 +104,13 @@ def sync99_tab(nu0, B, r, p_electron, delta=1):
 	nu1 = nu0-np.log10(delta)
 
 	#print ('B in:', B)
-	kap1 = 10**interp_alpha([z for z in zip(B, nu1, p_electron)])
-	eps1 = 10**interp_Ptot([z for z in zip(B, nu1, p_electron)])
+	kap1 = 10**interp_alpha([z for z in zip(B, nu1, p_electron)]) # absoruption coeff
+	eps1 = 10**interp_Ptot([z for z in zip(B, nu1, p_electron)]) * (1+z) # emission coeff and kcor
 	
-	return delta**2 * r**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*r) )	
+	d = r*2 # diameter
+	return delta**2 * r**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*r) )	# circular area 
+	#return delta**2 * d**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*d) )	# Spherical area  
+	#return delta**2 * d**2 / (4*D**2) * eps1/kap1 * ( 1+np.exp(-kap1*d)*(d*kap1/6-1) ) # spherical (Heino)
 
 
 def tau(nu0, B, r, p_electron=p_electron,

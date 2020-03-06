@@ -6,8 +6,8 @@ from sjoert import sync
 
 # local import
 import equipartition_functions 
-#from importlib import reload
-#reload(equipartition_functions)
+from importlib import reload
+reload(equipartition_functions)
 from equipartition_functions import *
 
 import emcee
@@ -189,8 +189,11 @@ if not(silent):
 
 # add small amount of scatter to start of walkers
 pos = [guess_pos + 1e-3*np.random.randn(ndim) for i in range(nwalkers)]
+
+z = equipartition_functions.z
+# let's go
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, 
-		args=(data_rec['mjd'], data_rec['flux_mJy'], data_rec['eflux_mJy'], np.log10(data_rec['nu_GHz']*1e9)))
+		args=(data_rec['mjd'], data_rec['flux_mJy'], data_rec['eflux_mJy'], np.log10(data_rec['nu_GHz']*1e9*(1+z))))
 
 # Clear and run the production chain.    
 sampler.run_mcmc(pos, nsteps, rstate0=np.random.get_state(), progress=True)
@@ -279,24 +282,33 @@ for i, mjd in enumerate(mjd_fit):
 
 		bf_func = model_func(bf_arr, np.repeat(mjd, len(xx)), np.log10(xx),verbose=False)
 		plt.plot(xx/1e9, bf_func,  '--',alpha=0.7, color=line[0].get_color()) #label=ll1
-		for l, parms in enumerate((samples[np.random.randint(len(samples), size=Nlc)])):
-			plt.plot(xx/1e9, model_func(parms[0:-1], np.repeat(mjd, len(xx)), np.log10(xx)),  '-',alpha=0.02, color=line[0].get_color()) #label=ll1
-
-			this_B = 10**parms[len(mjd_fit)+i]
-			this_R = 10**parms[i]
-			this_p = 10**parms[len(mjd_fit)*2]
-			samples_dict['R_eq'][i,l] = this_R
-			samples_dict['B_eq'][i,l] = this_B
-
-			samples_dict['E_eq'][i,l] = 4/3.*pi* (this_R)**3 * (this_B)**2/(8*np.pi)
-			samples_dict['n_electron'][i,l] = sync.K(this_B, this_p) / (this_p-1)
-			samples_dict['N_electron'][i,l] = n_electron[i,l] * (this_R**3) * 4/3.*pi
-			samples_dict['E_electron'][i,l] = sync.me * sync.c**2 * sync.K(this_B, this_p) / (this_p-2) * (this_R**3) * 4/3.*pi
-			if i<len(mjd_fit)-1:
-				samples_dict['v'][i, l] = (10**parms[i]-10**parms[i+1]) / ((mjd_fit[i]-mjd_fit[i+1])*3600*24) /3e10
-
 		xmax = xx[np.argmax(bf_func)]
 		plt.annotate('{0:0} d'.format(mjd-mjd0), (xmax/1e9/1.3, max(bf_func)/1.45), color=line[0].get_color())
+
+		for l, parms in enumerate((samples[np.random.randint(len(samples), size=Nlc)])):
+
+			# check for rough walkers
+			df = np.interp(np.log10(5e9), np.log10(xx), bf_func) / model_func(parms[0:-1], np.array([mjd]), np.array([np.log10(5e9)]))
+
+			if abs(np.log10(df))<0.3:
+				plt.plot(xx/1e9, model_func(parms[0:-1], np.repeat(mjd, len(xx)), np.log10(xx)),  '-',alpha=0.02, color=line[0].get_color()) #label=ll1
+
+				this_B = 10**parms[len(mjd_fit)+i]
+				this_R = 10**parms[i]
+				this_p = 10**parms[len(mjd_fit)*2]
+				samples_dict['R_eq'][i,l] = this_R
+				samples_dict['B_eq'][i,l] = this_B
+
+				#samples_dict['E_eq'][i,l] = 4/3.*pi* (this_R)**3 * (this_B)**2/(8*np.pi)
+				samples_dict['E_eq'][i,l] = 1/3.*pi* (this_R)**3 * (this_B)**2/(8*np.pi) # conical
+				samples_dict['n_electron'][i,l] = sync.K(this_B, this_p) / (this_p-1)
+				samples_dict['N_electron'][i,l] = samples_dict['n_electron'][i,l] * (this_R**3) * 4/3.*pi
+				samples_dict['E_electron'][i,l] = sync.me * sync.c**2 * sync.K(this_B, this_p) / (this_p-2) * (this_R**3) * 4/3.*pi
+				if i<len(mjd_fit)-1:
+					samples_dict['v'][i, l] = (10**parms[i]-10**parms[i+1]) / ((mjd_fit[i]-mjd_fit[i+1])*3600*24) /3e10
+			else:
+				print ('rejecting sample')
+
 
 
 plt.xlim(1.0,20) 
@@ -315,10 +327,11 @@ bf_rec = sjoert.rec.dict2rec(bf_dict, n=len(mjd_fit))
 for i, mjd in enumerate(mjd_fit): 
 	#dk = str(int(mjd_fit[i]-mjd_fit[0]))
 	for k in samples_dict.keys():
-		med, sig = np.log10(np.median(samples_dict[k][i, :])), np.std(np.log10(samples_dict[k][i,:]))
+		iok = samples_dict[k][i, :]!=0
+		med, sig = np.log10(np.median(samples_dict[k][i, iok])), np.std(np.log10(samples_dict[k][i,iok]))
 		# do linear for v
 		if k =='v':
-			med, sig = np.median(samples_dict['v'][i, :]), np.std(samples_dict['v'][i,:])
+			med, sig = np.median(samples_dict['v'][i, iok]), np.std(samples_dict['v'][i,iok])
 		bf_rec[k][i], bf_rec['e'+k][i] = med, sig
 
 		
