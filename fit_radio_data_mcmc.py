@@ -31,6 +31,7 @@ plotname = './plots/bran'
 z = equipartition_functions.z
 D_L = sjoert.stellar.lumdis(z, h=0.7)
 
+
 # read the radio data
 data_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
 
@@ -66,6 +67,7 @@ lnf = -2 												# fudge factor for errors
 # fix parameter:
 phi0 = pi/4.
 phi0 = 30/180*pi
+epsilon_e = 0.01
 
 prior_dict={}
 #prior_dict["p_electron"] =  {"min":2.2,"max":4.00,"sigma":None,"value":p_electron}
@@ -337,20 +339,20 @@ for i, mjd in enumerate(mjd_fit):
 				
 				#fV *= 1-0.9**3 # emitting region is with in 0.1 of total length
 
-				who = 'Barniol'
-				samples_dict['R_cone'][i,l] = sync.Req(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, p=this_p, who=who)
-				samples_dict['E_cone'][i,l] = sync.Eeq(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, p=this_p, who=who)
+				who = 'Barniol'				
+				samples_dict['R_cone'][i,l] = sync.Req(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
+				samples_dict['E_cone'][i,l] = sync.Eeq(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
 
 				# sphere
 				fA = 1 # one in newtonian case...
 				fV = 4/3.
 
-				samples_dict['R_sphere'][i,l] = sync.Req(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, p=this_p, who=who)
-				samples_dict['E_sphere'][i,l] = sync.Eeq(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, p=this_p, who=who)
+				samples_dict['R_sphere'][i,l] = sync.Req(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
+				samples_dict['E_sphere'][i,l] = sync.Eeq(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
 				
 				samples_dict['E_SJ'][i,l] =  4/3*pi*(this_R)**3 * (this_B)**2/(8*np.pi) 
 				
-				samples_dict['n_electr'][i,l] = sync.K(this_B, this_p) / (this_p-1)
+				samples_dict['n_electr'][i,l] = 1/(1+1/epsilon_e) * sync.K(this_B, this_p) / (this_p-1)
 				samples_dict['N_electr'][i,l] = samples_dict['n_electr'][i,l] * (this_R**3) * 4/3.*pi
 				samples_dict['E_electr'][i,l] = sync.me * sync.c**2 * sync.K(this_B, this_p, eps_e=equipartition_functions.eps_e) / (this_p-2) * (this_R**3) * 4/3.*pi
 			else:
