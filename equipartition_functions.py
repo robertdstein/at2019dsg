@@ -11,20 +11,15 @@ import scipy.interpolate
 import scipy.stats
 
 
-
-
 fit_all = True
 
 # -----
-# fit synchtroton model
-# Eq. in Falcke99
-
 i_obs = 60/180.*pi
 
 gamma_max = 1e4
-gamma_min=1
+gamma_min=2
 p_electron = 3
-eps_e = 1 # this is actually epison_e/epison_B?
+eps_e = 1# 1/(6/11) # this is actually eps_e/eps_B 
 
 # some defaults
 min_z = 100*3e5*1e6 # min inner jet radius 
@@ -39,83 +34,52 @@ R0 = 1e15
 sparse_fact = 0. # spacing between jet blobs
 
 p_electron_single= 3.0
-gamma_max_single = 1e4
-
-this_delta = sjoert.stellar.Doppler(sjoert.stellar.beta2gamma(v_jet),i_obs=i_obs)
-print ('Doppler factor:', this_delta)
+gamma_max_single = 1e3
 
 z = 0.0512 # Bran...
 D = sjoert.stellar.lumdis(z, h=0.7)
 
 
-# build lookup table
-BB = np.linspace(0.01, 100, 50)
-nunu = np.linspace(0.9, 20, 20)*1e9
-pp = np.linspace(1.9,3.1, 10)
-points =np.zeros( (len(nunu)*len(BB)*len(pp),3))
-alpha_values = np.zeros( (len(BB), len(nunu), len(pp)) )  
-Ptot_values = np.zeros( (len(BB), len(nunu), len(pp)) )  
-
-l=0
-for i in range(len(BB)):
-	for j in range(len(nunu)):
-		for k in range(len(pp)):
-			points[l,:] = np.log10(BB[i]), np.log10(nunu[j]), np.log10(pp[k])
-			alpha_values[i,j,k] = np.log10(sync.alpha_nu(BB[i],nunu[j], pp[k], gamma_max, gamma_min, eps_e)[0])
-			Ptot_values[i,j,k] = np.log10(sync.Ptot(BB[i],nunu[j], pp[k], gamma_max, gamma_min, eps_e)[0])
-			l+=1
-	print (len(BB)-i)
-
-
-import scipy.interpolate
-#interp_fun3 = scipy.interpolate.LinearNDInterpolator(points, values)
-interp_alpha = scipy.interpolate.RegularGridInterpolator( (np.log10(BB), np.log10(nunu), np.log10(pp)), alpha_values, bounds_error=False, fill_value=None)
-interp_Ptot = scipy.interpolate.RegularGridInterpolator( (np.log10(BB), np.log10(nunu), np.log10(pp)), Ptot_values, bounds_error=False, fill_value=None)
-print ('done building interpolator. testing:')
-for B in [0.2, 16]:
-	for nu in [1.5e9, 17e9]:
-		for p in [2.1,3.0]:
-			print (B, nu/1e9, p)
-			print ('diff alpha:', interp_alpha([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.alpha_nu(B, nu, p)))
-			print ('diff Ptot:', interp_Ptot([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.Ptot(B, nu, p)))
-
-
-
-def sync99(nu0, B, r, D=D, p_electron=p_electron, Knorm=1.,
+def sync99(nu0, B, r, D=D, p_electron=p_electron, 
 			gamma_max=gamma_max, gamma_min=gamma_min, 
-			eps_e=1.0, filling_factor=1, delta=1, do_ana=False):
+			eps_e=eps_e, filling_factor=1, delta=1):
+	'''
+	radiative transfer with source function. 
 
+	we expect S_nu = pi (r/D)**2 I_nu
+	but the sync.Ptot is not per unit solid angle, so it somehow works out
+
+	'''
 	
 	nu1 = nu0/delta
 
 	kap1 = sync.alpha_nu(B, nu1, p_electron, gamma_max, gamma_min, eps_e)
-	eps1 = sync.Ptot(B, nu1, p_electron, gamma_max, gamma_min, eps_e)	
+	eps1 = sync.Ptot(B, nu1, p_electron, gamma_max, gamma_min, eps_e) / (2*pi) * (1+z)	
 
-	d = r*2
+	#d = 2*r
 	#return delta**2 * r**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*r) )	# circular area 
-	#return delta**2 * d**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*d*filling_factor*Knorm) )	# Spherical area  
-	return d**2 / (4*D**2) * eps1/kap1 * ( 1+np.exp(-kap1*d)*(d*kap1/6-1) ) # spherical (Heino)
+	#return delta**2 * d**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*d*filling_factor) )	# Spherical area  
+	return  np.pi*(r/D)**2 * eps1/kap1 * ( 1-np.exp(-kap1*r) )	
+	#return d**2 / (D**2) * eps1/kap1 * ( 1+np.exp(-kap1*d)*(d*kap1/6-1) ) # spherical (Heino)
 
-def sync99_tab(nu0, B, r, p_electron, delta=1):
+def sync99_tab(nu1, B, r, p_electron, phi=1):
 	'''
-	same as sync99, but tabulate emission/absorption. 
-	input are 
+	tabulated emission/absorption. 	
 	'''
-	nu1 = nu0-np.log10(delta)
+	#nu1 = nu0-np.log10(delta)
 
 	#print ('B in:', B)
 	kap1 = 10**interp_alpha([z for z in zip(B, nu1, p_electron)]) # absoruption coeff
-	eps1 = 10**interp_Ptot([z for z in zip(B, nu1, p_electron)]) * (1+z) # emission coeff and kcor
+	eps1 = 10**interp_Ptot([z for z in zip(B, nu1, p_electron)]) / (2*pi)  * (1+z) # emission coeff and kcorrection
 	
-	d = r*2 # diameter
-	return delta**2 * r**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*r) )	# circular area 
-	#return delta**2 * d**2 / (4*D**2) * eps1/kap1 * ( 1-np.exp(-kap1*d) )	# Spherical area  
-	#return delta**2 * d**2 / (4*D**2) * eps1/kap1 * ( 1+np.exp(-kap1*d)*(d*kap1/6-1) ) # spherical (Heino)
-
+	#d = 2*r # diameter
+	#d_cone = r/np.tan(phi)
+	
+	return np.pi*(r/D)**2 * eps1/kap1 * ( 1-np.exp(-kap1*r) )
 
 def tau(nu0, B, r, p_electron=p_electron,
 			gamma_max=gamma_max, gamma_min=gamma_min, Knorm=1,
-			eps_e=1, filling_factor=1, delta=1):
+			eps_e=eps_e, filling_factor=1, delta=1):
 	
 	nu = nu0/delta
 	
@@ -342,6 +306,41 @@ def res_sumtime(p, nu, time, F, Ferr):
 
 	return this_res
 
+
+# build lookup table
+# note, these bounds may need to be adjusted for different sources 
+BB = np.linspace(0.01, 5, 20)
+nunu = np.linspace(1, 20, 10)*1e9
+pp = np.linspace(2.01,4, 10)
+points =np.zeros( (len(nunu)*len(BB)*len(pp),3))
+alpha_values = np.zeros( (len(BB), len(nunu), len(pp)) )  
+Ptot_values = np.zeros( (len(BB), len(nunu), len(pp)) )  
+
+l=0
+for i in range(len(BB)):
+	for j in range(len(nunu)):
+		for k in range(len(pp)):
+			points[l,:] = np.log10(BB[i]), np.log10(nunu[j]), np.log10(pp[k])
+			alpha_values[i,j,k] = np.log10(sync.alpha_nu(BB[i],nunu[j], pp[k], gamma_max, gamma_min, eps_e)[0])
+			Ptot_values[i,j,k] = np.log10(sync.Ptot(BB[i],nunu[j], pp[k], gamma_max, gamma_min, eps_e)[0])
+			l+=1
+	print (len(BB)-i)
+
+
+import scipy.interpolate
+#interp_fun3 = scipy.interpolate.LinearNDInterpolator(points, values)
+interp_alpha = scipy.interpolate.RegularGridInterpolator( (np.log10(BB), np.log10(nunu), np.log10(pp)), alpha_values, bounds_error=True, fill_value=None)
+interp_Ptot = scipy.interpolate.RegularGridInterpolator( (np.log10(BB), np.log10(nunu), np.log10(pp)), Ptot_values, bounds_error=True, fill_value=None)
+
+print ('done building interpolator. testing:')
+for B in [0.05, 2]:
+	for nu in [1.5e9, 17e9]:
+		for p in [2.1,3.5]:
+			print ('{B, nu, p}=',B, nu/1e9, p)
+			print ('diff alpha (dex): {0:0.3f}'.format(float(interp_alpha([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.alpha_nu(B, nu, p, gamma_min=gamma_min)))))
+			print ('diff Ptot (dex): {0:0.3f}'.format(float(interp_Ptot([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.Ptot(B, nu, p, gamma_min=gamma_min)))))
+			print ('diff Snu (dex): {0:0.3f}'.format(float(np.log10(sync99_tab(np.log10(np.array([nu])),np.log10(np.array([B])), 1e16, np.log10(np.array([p]))))) \
+												- float(np.log10(sync99(nu, B, 1e16, p_electron=p, gamma_min=gamma_min, gamma_max=gamma_max, eps_e=eps_e)))))
 
 
 
