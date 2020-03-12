@@ -4,7 +4,7 @@ import numpy as np
 from data import photometry_data, radio_data, bran_disc, t_neutrino, xray_data, t_peak_mjd, gamma_data, gamma_deintegrate
 from astropy import constants as const
 from flux_utils import flux_conversion, convert_radio, colors, bands, bran_z
-from plots import big_fontsize, fig_width, label_line
+from plots import big_fontsize, fig_width
 from astropy.time import Time
 print(photometry_data[photometry_data["band"] == "UVW2"])
 print(149.54360 + t_peak_mjd.mjd)
@@ -39,7 +39,7 @@ for band in ['UVW2', 'UVM2','UVW1','U','g.ZTF', 'r.ZTF']:
         #         band = x
         
         ax1b.errorbar(data["#day_since_peak"] - t_offset, data["lum"], yerr=data["err_lum"], color=c,  fmt='o', label=band)
-        lbl = "{1} (${0:0.0f}~nm$)".format(bands[band].to("nm"), band.split('UV')[-1].split('.')[0])
+        lbl = "{1} ({0:0.0f})".format(bands[band].to("nm"), band.split('UV')[-1].split('.')[0])
         ax1.errorbar(data["#day_since_peak"] - t_offset, flux, yerr=flux_conversion *data["err_lum"], color=c,  fmt='o', label=lbl)
 
 ax1.set_ylabel(r"$\nu F_{\nu}$ [erg cm$^{-2}$ s$^{-1}$]", fontsize=big_fontsize)
@@ -98,7 +98,8 @@ for i, base_label in enumerate(["0.2-10 keV (XRT)", "0.3-10 keV (XMM)"]):
         marker = ["o", "*"][i]
         
         col = ["k", "blue"][i]
-        alpha = [1., 0.2][j]
+        alpha = [1., 0.2+i/5][j]
+        ms = [6,10][i]
         
         data = xray_data[mask]
         if not ul:
@@ -110,8 +111,8 @@ for i, base_label in enumerate(["0.2-10 keV (XRT)", "0.3-10 keV (XMM)"]):
             yerr = 0.2*data["flux"]
             xerr = 3.
             
-        ax2.errorbar(data["MJD"]-bran_disc.mjd, data["flux"], yerr=yerr, xerr=xerr,  fmt=marker, label=label, color=col, uplims=ul, alpha=alpha)
-        ax2b.errorbar(data["MJD"]-bran_disc.mjd, data["flux"]/flux_conversion, yerr=yerr/flux_conversion, xerr=xerr, fmt=marker, color=col, uplims=ul, alpha=alpha)
+        ax2.errorbar(data["MJD"]-bran_disc.mjd, data["flux"], yerr=yerr, xerr=xerr,  fmt=marker, label=label, color=col, uplims=ul, alpha=alpha,ms=ms)
+        ax2b.errorbar(data["MJD"]-bran_disc.mjd, data["flux"]/flux_conversion, yerr=yerr/flux_conversion, xerr=xerr, fmt=marker, color=col, uplims=ul, alpha=alpha,ms=ms)
 # ax2.errorbar(xray_ul_data["#MJD"]-bran_disc.mjd, xray_ul_data["flux"], yerr=0.2*xray_ul_data["flux"], xerr=1., uplims=True, fmt=' ', color="k")
 # ax3b.errorbar(xray_data["#MJD"]-t_peak_mjd.mjd, 10.**xray_data["log_lum"], yerr=10.**xray_data["log_lum_err"], label="0.2-10 keV",  fmt='o',)
 
