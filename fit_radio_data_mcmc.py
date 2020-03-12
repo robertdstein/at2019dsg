@@ -67,7 +67,7 @@ lnf = -2 												# fudge factor for errors
 # fix parameter:
 phi0 = pi/4.
 phi0 = 30/180*pi
-epsilon_e = 0.01
+epsilon_e = 10
 
 prior_dict={}
 #prior_dict["p_electron"] =  {"min":2.2,"max":4.00,"sigma":None,"value":p_electron}
@@ -266,20 +266,24 @@ json.dump(out_dict, open('./data/at2019dsg_mcmc.json', 'w'), indent=3)
 # --- 
 # look over sample at each MJD and 
 # make nice SED plot
-plt.clf()
+plt.close()
+f1 = plt.figure(figsize=(7,7))
+
+
+
 from cycler import cycler
 cmap = mpl.cm.get_cmap('gist_heat')
 cmap = mpl.cm.get_cmap('plasma')
 cmap = mpl.cm.get_cmap('viridis')
 custom_cycler = (cycler(color=([cmap(i) for i in np.linspace(0.6,0.0,len(mjd_fit))])))
-plt.gca().set_prop_cycle(custom_cycler)
+f1.gca().set_prop_cycle(custom_cycler)
 
 Nlc = 200
-mjd0 = mjd_fit[0]-12
+mjd0 = mjd_fit[0]-12 # peak?
 mjd0 = 58584 # first detection?
 
 samples_dict = {k:np.zeros((len(mjd_fit), Nlc)) for k in \
- 	('F_p', 'nu_p', 'R_SJ', 'R_cone', 'R_sphere', 'E_SJ','E_cone','E_sphere', 'B_SJ',  'n_electr','N_electr','E_electr', 'v_SJ', 'v_cone', 'v_sphere')}
+ 	('F_p', 'nu_p', 'R_SJ', 'R_cone', 'R_sphere', 'E_SJ','E_cone','E_sphere', 'B_SJ','B_sphere','B_cone',  'n_electr','N_electr','E_electr', 'v_SJ', 'v_cone', 'v_sphere')}
 
 for i, mjd in enumerate(mjd_fit): 
 	
@@ -342,14 +346,17 @@ for i, mjd in enumerate(mjd_fit):
 				who = 'Barniol'				
 				samples_dict['R_cone'][i,l] = sync.Req(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
 				samples_dict['E_cone'][i,l] = sync.Eeq(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
+				samples_dict['B_cone'][i,l] = sqrt(samples_dict['E_cone'][i,l]/(1+11/6)*8*pi / (fV*pi*(samples_dict['R_cone'][i,l])**3))
+
 
 				# sphere
-				fA = 1 # one in newtonian case...
+				fA = 1 # one in Newtonian case...
 				fV = 4/3.
 
 				samples_dict['R_sphere'][i,l] = sync.Req(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
 				samples_dict['E_sphere'][i,l] = sync.Eeq(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
-				
+				samples_dict['B_sphere'][i,l] = sqrt(samples_dict['E_sphere'][i,l]/(1+11/6)*8*pi / (fV*pi*(samples_dict['R_sphere'][i,l])**3))
+
 				samples_dict['E_SJ'][i,l] =  4/3*pi*(this_R)**3 * (this_B)**2/(8*np.pi) 
 				
 				samples_dict['n_electr'][i,l] = 1/(1+1/epsilon_e) * sync.K(this_B, this_p) / (this_p-1)
@@ -358,10 +365,10 @@ for i, mjd in enumerate(mjd_fit):
 			else:
 				print ('rejecting sample')
 
-# get the velocities
+# get the velocities, use rest-frame time
 for i, mjd in enumerate(mjd_fit[0:-1]): 
 	for k in ('SJ', 'cone', 'sphere'):
-		samples_dict['v_'+k][i, :] = (samples_dict['R_'+k][i, :]-samples_dict['R_'+k][i+1, :]) / ((mjd_fit[i]-mjd_fit[i+1])*3600*24) /3e10 
+		samples_dict['v_'+k][i, :] = (samples_dict['R_'+k][i, :]-samples_dict['R_'+k][i+1, :]) / ((mjd_fit[i]-mjd_fit[i+1])*3600*24/(1+z)) /3e10 
 
 
 plt.xlim(1.0,20) 
@@ -370,6 +377,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('Frequency (GHz)')
 plt.ylabel('Flux (mJy)')
+#plt.tight_layout()
 plt.savefig('./plots/at2019dsg_radio.pdf')
 
 # also write the best fit and uncertainty as a function of time
@@ -403,22 +411,31 @@ out_cols = \
  'R_sphere',
  'R_cone',
  'eR_SJ',
+ 'eR_sphere',
  'eR_cone',
  'E_SJ',
  'E_sphere',
-  'E_cone',
+ 'E_cone',
  'eE_SJ',
+ 'eE_sphere',
  'eE_cone',
+ 'B_SJ',
+ 'B_sphere',
+ 'B_cone',
+ 'eB_SJ', 
+ 'eB_sphere',
+ 'eB_cone',
  'v_SJ', 
  'v_sphere', 
  'v_cone',
  'ev_SJ',
+ 'ev_sphere',
  'ev_cone']
 
-astropy.io.ascii.write([bf_rec[x] for x in out_cols], './data/at2019dsg_mcmc_time.dat', 
+astropy.io.ascii.write([bf_rec[x] for x in out_cols], './data/at2019dsg_mcmc_time_eps_e{0:0.3f}.dat'.format(epsilon_e), 
 		format='fixed_width', 
 		names = out_cols,
-		formats={k:'0.3f' for k in bf_dict.keys()},
+		formats={k:'0.3f' for k in out_cols},
 		overwrite=True)
 
 plt.pause(0.1)
@@ -433,6 +450,51 @@ key = input('next?')
 # plt.pause(0.1)
 # key = input('next?)')
 
+
+f1.clf()
+axE = f1.add_subplot(2,1,1)    
+axR = f1.add_subplot(2,1,2, sharex=axE)
+axE.set_prop_cycle(custom_cycler)
+
+axE.set_prop_cycle(custom_cycler)
+axR.set_prop_cycle(custom_cycler)
+
+for i in range(len(mjd_fit)):
+	axE.errorbar(bf_rec[i]['time'], 10**bf_rec[i]['E_cone']/1e49, np.log(10)*10**bf_rec[i]['E_cone']*bf_rec[i]['eE_cone']/1e49, fmt='o', ms=7)
+	axR.errorbar(bf_rec[i]['time'], 10**bf_rec[i]['R_cone']/1e16, np.log(10)*10**bf_rec[i]['R_cone']*bf_rec[i]['eR_cone']/1e16, fmt='s',ms=7)
+	#axE.errorbar(bf_rec[i]['time'], bf_rec[i]['E_cone'],bf_rec[i]['eE_cone'], fmt='o', ms=5)
+	#axR.errorbar(bf_rec[i]['time'], bf_rec[i]['R_cone'], bf_rec[i]['eR_cone'], fmt='s',ms=5)
+
+
+xx = np.linspace(min(bf_rec['time'])-20, max(bf_rec['time'])+10)
+#xx = np.linspace(10, max(bf_rec['time'])+2)
+
+dEeqdt = (max(10**bf_rec['E_cone'])-min(10**bf_rec['E_cone']))/((mjd_fit[-1]-mjd_fit[0])/(1+z)*3600*24)
+axE.plot(xx, 10**(np.median(bf_rec['E_cone'])+np.log10((xx)/np.median(bf_rec['time'])))/1e49, ':',color='grey', alpha=1, 
+			label=r'$\dot{{E}}_{{eq}} = {0:0.0f} \times 10^{{42}}$ erg/s'.format(dEeqdt/1e42))
+
+axR.plot(xx, (xx+5)*24*3600*0.16*3e10/1e16, ':',color='grey', alpha=1, 
+		label='$\dot{{R}}=0.16 c$')
+
+axE.set_ylabel('$E_{eq}~(10^{49}$ erg)')
+axR.set_ylabel('$R_{eq}~(10^{16}$ cm)')
+axR.set_xlabel('Days since discovery')
+#axE.set_yscale('log')
+axE.set_ylim(0, max(axE.get_ylim()))
+axR.set_ylim(0, max(axR.get_ylim()))
+axR.set_xlim(0, max(axR.get_xlim()))
+plt.setp(axE.get_xticklabels(), visible=False)
+#plt.tight_layout()
+axE.legend(loc=2, fontsize=13)
+axR.legend(loc=2, fontsize=13)
+f1.subplots_adjust(hspace=0.05)
+#plt.xscale('log')
+#plt.legend(loc=0)
+#xl = plt.xlim()
+#plt.legend(loc=2)
+#plt.pause(0.1)
+plt.savefig('./plots/at2019dsg_ER.pdf')
+key = input('next?)')
 
 
 plt.clf()
@@ -458,22 +520,7 @@ key = input('next?)')
 # key = input('next?)')
 
 
-plt.clf()
-plt.errorbar(bf_rec['time'], bf_rec['E_cone'], bf_rec['eE_cone'], fmt='o', label='Barniol, cone')
-plt.errorbar(bf_rec['time'], bf_rec['E_SJ'], bf_rec['eE_SJ'], fmt='s', label='Sjoert, sphere')
-plt.errorbar(bf_rec['time'], bf_rec['E_sphere'], bf_rec['eE_sphere'], fmt='x', label='Barniol, sphere')
 
-xx = np.linspace(min(bf_rec['time'])-0.1, max(bf_rec['time'])+0.1)
-plt.plot(xx, np.median(bf_rec['E_cone'])+np.log10(xx/np.median(bf_rec['time'])), '-', label='$E_{eq}\propto t$')
-plt.ylabel('$E_{eq}$ (erg)')
-plt.xlabel('time (day)')
-plt.xscale('log')
-plt.legend(loc=0)
-xl = plt.xlim()
-plt.legend(loc=2)
-plt.pause(0.1)
-plt.savefig('./plots/at2019dsg_tE.pdf')
-key = input('next?)')
 
 # plt.clf()
 # for i, mjd in enumerate(mjd_fit): 
