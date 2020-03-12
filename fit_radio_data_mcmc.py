@@ -1,5 +1,3 @@
-from plots import big_fontsize, fig_width, label_line
-
 import astropy.io.ascii
 from scipy.optimize import leastsq
 
@@ -7,6 +5,8 @@ from scipy.optimize import leastsq
 from sjoert import sync
 
 # local import
+from plots import big_fontsize, fig_width, label_line
+from data import  bran_disc, t_peak_mjd
 import equipartition_functions 
 from importlib import reload
 #reload(equipartition_functions)
@@ -19,6 +19,8 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+
+
 
 credit_int = 68.2689492137086
 
@@ -69,7 +71,7 @@ lnf = -2 												# fudge factor for errors
 # fix parameter:
 phi0 = pi/4.
 phi0 = 30/180*pi
-epsilon_e = 1
+epsilon_e = 0.1
 
 prior_dict={}
 #prior_dict["p_electron"] =  {"min":2.2,"max":4.00,"sigma":None,"value":p_electron}
@@ -267,12 +269,10 @@ json.dump(out_dict, open('./data/at2019dsg_mcmc.json', 'w'), indent=3)
 
 
 # --- 
-# look over sample at each MJD and 
+# loop over sample at each MJD and 
 # make nice SED plot
 plt.close()
 f1 = plt.figure(figsize=(9,9))
-
-
 
 from cycler import cycler
 cmap = mpl.cm.get_cmap('gist_heat')
@@ -282,9 +282,8 @@ custom_cycler = (cycler(color=([cmap(i) for i in np.linspace(0.6,0.0,len(mjd_fit
 f1.gca().set_prop_cycle(custom_cycler)
 
 Nlc = 200
-mjd0 = mjd_fit[0]-12 # peak?
-mjd0 = 58582.83979363426 # used by Robert
-mjd0 = 58584 # first detection?
+mjd0 = bran_disc.mjd
+#mjd0 = 58584 # original estimate of first detection
 
 samples_dict = {k:np.zeros((len(mjd_fit), Nlc)) for k in \
  	('F_p', 'nu_p', 'R_SJ', 'R_cone', 'R_sphere', 'E_SJ','E_cone','E_sphere', 'B_SJ','B_sphere','B_cone',  'n_electr','N_electr','E_electr', 'v_SJ', 'v_cone', 'v_sphere')}
@@ -311,7 +310,7 @@ for i, mjd in enumerate(mjd_fit):
 		bf_func = model_func(bf_arr, np.repeat(mjd, len(xx)), np.log10(xx),verbose=False) #-base_xx
 		plt.plot(xx/1e9, bf_func,  '--',alpha=0.7, color=line[0].get_color()) #label=ll1
 		xmax = xx[np.argmax(bf_func)]
-		plt.annotate('${0:0}\,d$'.format(mjd-mjd0), (xmax/1e9/1.3, max(bf_func)/1.37), color=line[0].get_color(), size=big_fontsize-2)
+		plt.annotate('${0:0.0f}\,d$'.format(mjd-mjd0), (xmax/1e9/1.3, max(bf_func)/1.37), color=line[0].get_color(), size=big_fontsize-2)
 
 		for l, parms in enumerate((samples[np.random.randint(len(samples), size=Nlc)])):
 
