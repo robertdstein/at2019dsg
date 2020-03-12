@@ -1,3 +1,5 @@
+from plots import big_fontsize, fig_width, label_line
+
 import astropy.io.ascii
 from scipy.optimize import leastsq
 
@@ -67,7 +69,7 @@ lnf = -2 												# fudge factor for errors
 # fix parameter:
 phi0 = pi/4.
 phi0 = 30/180*pi
-epsilon_e = 10
+epsilon_e = 1
 
 prior_dict={}
 #prior_dict["p_electron"] =  {"min":2.2,"max":4.00,"sigma":None,"value":p_electron}
@@ -263,11 +265,12 @@ if not(silent):
 import json
 json.dump(out_dict, open('./data/at2019dsg_mcmc.json', 'w'), indent=3)
 
+
 # --- 
 # look over sample at each MJD and 
 # make nice SED plot
 plt.close()
-f1 = plt.figure(figsize=(7,7))
+f1 = plt.figure(figsize=(9,9))
 
 
 
@@ -280,6 +283,7 @@ f1.gca().set_prop_cycle(custom_cycler)
 
 Nlc = 200
 mjd0 = mjd_fit[0]-12 # peak?
+mjd0 = 58582.83979363426 # used by Robert
 mjd0 = 58584 # first detection?
 
 samples_dict = {k:np.zeros((len(mjd_fit), Nlc)) for k in \
@@ -307,7 +311,7 @@ for i, mjd in enumerate(mjd_fit):
 		bf_func = model_func(bf_arr, np.repeat(mjd, len(xx)), np.log10(xx),verbose=False) #-base_xx
 		plt.plot(xx/1e9, bf_func,  '--',alpha=0.7, color=line[0].get_color()) #label=ll1
 		xmax = xx[np.argmax(bf_func)]
-		plt.annotate('{0:0} d'.format(mjd-mjd0), (xmax/1e9/1.3, max(bf_func)/1.45), color=line[0].get_color())
+		plt.annotate('${0:0}\,d$'.format(mjd-mjd0), (xmax/1e9/1.3, max(bf_func)/1.37), color=line[0].get_color(), size=big_fontsize-2)
 
 		for l, parms in enumerate((samples[np.random.randint(len(samples), size=Nlc)])):
 
@@ -371,12 +375,13 @@ for i, mjd in enumerate(mjd_fit[0:-1]):
 		samples_dict['v_'+k][i, :] = (samples_dict['R_'+k][i, :]-samples_dict['R_'+k][i+1, :]) / ((mjd_fit[i]-mjd_fit[i+1])*3600*24/(1+z)) /3e10 
 
 
+plt.tick_params(axis='both', which='major', labelsize=big_fontsize)
 plt.xlim(1.0,20) 
 plt.ylim(0.05, 2)
 plt.xscale('log')
 plt.yscale('log')
-plt.xlabel('Frequency (GHz)')
-plt.ylabel('Flux (mJy)')
+plt.xlabel('Frequency (GHz)', fontsize=big_fontsize)
+plt.ylabel('Flux (mJy)', fontsize=big_fontsize)
 #plt.tight_layout()
 plt.savefig('./plots/at2019dsg_radio.pdf')
 
@@ -460,7 +465,7 @@ axE.set_prop_cycle(custom_cycler)
 axR.set_prop_cycle(custom_cycler)
 
 for i in range(len(mjd_fit)):
-	axE.errorbar(bf_rec[i]['time'], 10**bf_rec[i]['E_cone']/1e49, np.log(10)*10**bf_rec[i]['E_cone']*bf_rec[i]['eE_cone']/1e49, fmt='o', ms=7)
+	axE.errorbar(bf_rec[i]['time'], 10**bf_rec[i]['E_cone']/1e48, np.log(10)*10**bf_rec[i]['E_cone']*bf_rec[i]['eE_cone']/1e48, fmt='o', ms=7)
 	axR.errorbar(bf_rec[i]['time'], 10**bf_rec[i]['R_cone']/1e16, np.log(10)*10**bf_rec[i]['R_cone']*bf_rec[i]['eR_cone']/1e16, fmt='s',ms=7)
 	#axE.errorbar(bf_rec[i]['time'], bf_rec[i]['E_cone'],bf_rec[i]['eE_cone'], fmt='o', ms=5)
 	#axR.errorbar(bf_rec[i]['time'], bf_rec[i]['R_cone'], bf_rec[i]['eR_cone'], fmt='s',ms=5)
@@ -470,24 +475,26 @@ xx = np.linspace(min(bf_rec['time'])-20, max(bf_rec['time'])+10)
 #xx = np.linspace(10, max(bf_rec['time'])+2)
 
 dEeqdt = (max(10**bf_rec['E_cone'])-min(10**bf_rec['E_cone']))/((mjd_fit[-1]-mjd_fit[0])/(1+z)*3600*24)
-axE.plot(xx, 10**(np.median(bf_rec['E_cone'])+np.log10((xx)/np.median(bf_rec['time'])))/1e49, ':',color='grey', alpha=1, 
+axE.plot(xx, 10**(np.median(bf_rec['E_cone'])+np.log10((xx)/np.median(bf_rec['time'])))/1e48, ':',color='grey', alpha=1, 
 			label=r'$\dot{{E}}_{{eq}} = {0:0.0f} \times 10^{{42}}$ erg/s'.format(dEeqdt/1e42))
 
 axR.plot(xx, (xx+5)*24*3600*0.16*3e10/1e16, ':',color='grey', alpha=1, 
 		label='$\dot{{R}}=0.16 c$')
 
-axE.set_ylabel('$E_{eq}~(10^{49}$ erg)')
-axR.set_ylabel('$R_{eq}~(10^{16}$ cm)')
-axR.set_xlabel('Days since discovery')
+axE.set_ylabel('$E_{eq}~(10^{48}$ erg)', fontsize=big_fontsize)
+axR.set_ylabel('$R_{eq}~(10^{16}$ cm)', fontsize=big_fontsize)
+axR.set_xlabel('Days since discovery', fontsize=big_fontsize)
 #axE.set_yscale('log')
 axE.set_ylim(0, max(axE.get_ylim()))
 axR.set_ylim(0, max(axR.get_ylim()))
 axR.set_xlim(0, max(axR.get_xlim()))
 plt.setp(axE.get_xticklabels(), visible=False)
 #plt.tight_layout()
-axE.legend(loc=2, fontsize=13)
-axR.legend(loc=2, fontsize=13)
+axE.legend(loc=2, fontsize=big_fontsize-2)
+axR.legend(loc=2, fontsize=big_fontsize-2)
 f1.subplots_adjust(hspace=0.05)
+axE.tick_params(axis='both', which='major', labelsize=big_fontsize)
+axR.tick_params(axis='both', which='major', labelsize=big_fontsize)
 #plt.xscale('log')
 #plt.legend(loc=0)
 #xl = plt.xlim()
