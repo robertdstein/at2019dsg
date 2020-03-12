@@ -109,7 +109,7 @@ for i, base_label in enumerate(["0.2-10 keV (XRT)", "0.3-10 keV (XMM)"]):
         else:
             label = None
             yerr = 0.2*data["flux"]
-            xerr = 3.
+            xerr = 0
             
         ax2.errorbar(data["MJD"]-bran_disc.mjd, data["flux"], yerr=yerr, xerr=xerr,  fmt=marker, label=label, color=col, uplims=ul, alpha=alpha,ms=ms)
         ax2b.errorbar(data["MJD"]-bran_disc.mjd, data["flux"]/flux_conversion, yerr=yerr/flux_conversion, xerr=xerr, fmt=marker, color=col, uplims=ul, alpha=alpha,ms=ms)
