@@ -6,8 +6,6 @@ from astropy import constants as const
 from flux_utils import flux_conversion, convert_radio, colors, bands, bran_z
 from plots import big_fontsize, fig_width
 from astropy.time import Time
-print(photometry_data[photometry_data["band"] == "UVW2"])
-print(149.54360 + t_peak_mjd.mjd)
 
 times = []
 delta_lum = []
@@ -19,13 +17,15 @@ plt.figure(figsize=(fig_width * 2., fig_width * 1.5))
 ax1 = plt.subplot(211)
 ax1b = ax1.twinx()
 
-flux_conversion *= (1+bran_z) # currently missig 
+flux_conversion *= (1+bran_z) # currently missing
 
 # Plot luminosity
 #bran_disc.mjd = 58584 # mjd0 from radio plots/tables...
 t_offset = bran_disc.mjd - t_peak_mjd.mjd
 
-for band in ['UVW2', 'UVM2','UVW1','U','g.ZTF', 'r.ZTF']:
+markers = ["o", "*", "s", "2", "+", "d"]
+
+for i, band in enumerate(['UVW2', 'UVM2','UVW1','U','g.ZTF', 'r.ZTF']):
     if band in bands:
         c = colors[band]
         data = photometry_data[photometry_data["band"] == band]
@@ -34,13 +34,15 @@ for band in ['UVW2', 'UVM2','UVW1','U','g.ZTF', 'r.ZTF']:
         f = (const.c / wl).to("GHz")
         flux = flux_conversion * data["lum"]
         
-        # for x in ["g", "r"]:
-        #     if x in band:
-        #         band = x
+        for x in ["g", "r"]:
+            if x in band:
+                band = x
+
+        print(band)
         
-        ax1b.errorbar(data["#day_since_peak"] - t_offset, data["lum"], yerr=data["err_lum"], color=c,  fmt='o', label=band)
-        lbl = "{1} ({0:0.0f})".format(bands[band].to("nm"), band.split('UV')[-1].split('.')[0])
-        ax1.errorbar(data["#day_since_peak"] - t_offset, flux, yerr=flux_conversion *data["err_lum"], color=c,  fmt='o', label=lbl)
+        ax1b.errorbar(data["#day_since_peak"] - t_offset, data["lum"], yerr=data["err_lum"], color=c,  fmt=markers[i], label=band)
+        lbl = "{1} ({0:0.0f})".format(bands[band].to("nm"), band)
+        ax1.errorbar(data["#day_since_peak"] - t_offset, flux, yerr=flux_conversion *data["err_lum"], color=c,  fmt=markers[i], label=lbl)
 
 ax1.set_ylabel(r"$\nu F_{\nu}$ [erg cm$^{-2}$ s$^{-1}$]", fontsize=big_fontsize)
 ax1b.set_ylabel(r"$\nu L_{\nu}$ [erg s$^{-1}$]", fontsize=big_fontsize)
@@ -87,7 +89,7 @@ ax1b.tick_params(axis='both', which='major', labelsize=big_fontsize)
 ax2 = plt.subplot(212, sharex=ax1)
 ax2b = ax2.twinx()
 
-for i, base_label in enumerate(["0.2-10 keV (XRT)", "0.3-10 keV (XMM)"]):
+for i, base_label in enumerate(["0.3-10 keV (XRT)", "0.3-10 keV (XMM)"]):
     for j, ul in enumerate([False, True]):
         
         mask = np.logical_and(

@@ -16,6 +16,9 @@ bran_z = 0.0512
 photometry_path = os.path.join(data_dir, "BranStark.dat")
 photometry_data = pd.read_table(photometry_path, skiprows=4, sep="\s+")
 
+marshal_path = os.path.join(data_dir, "bran_marshal.csv")
+marshal_data = pd.read_csv(marshal_path)
+
 radio_data_files = sorted([x for x in os.listdir(data_dir) if "at2019dsg_20" in x])[1:]
 vla_data = []
 for x in radio_data_files:
