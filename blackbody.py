@@ -26,11 +26,16 @@ def l_nu(nu_hz, t, r_bb_cm):
 def nu_l_nu(nu_hz, t, r_bb_cm):
     return (l_nu(nu_hz, t, r_bb_cm) * nu_hz*u.Hz).to("erg s^-1")
 
+def nu_f_nu(nu_hz, t, r_bb_cm, z):
+    dist = cosmo.luminosity_distance(z=z).to(u.cm)
+    nln = nu_l_nu(nu_hz, t, r_bb_cm)
+    return nln / (4 * np.pi * dist**2)
+
 def spectral_flux_density(nu_hz_obs, t, z, r_bb_cm):
     nu_hz_emit = (1 + z) * nu_hz_obs
     source_flux = spectral_irradiance(nu_hz_emit, t)
     dist = cosmo.luminosity_distance(z=z).to(u.cm)
-    obs_flux = source_flux * (r_bb_cm * u.cm)/dist
+    obs_flux = source_flux * ((r_bb_cm * u.cm)/dist)
     obs_flux = obs_flux.to("erg cm^-2 s^-1 Hz^-1")
     return obs_flux
 

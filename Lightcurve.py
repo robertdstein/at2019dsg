@@ -34,12 +34,14 @@ for i, band in enumerate(['UVW2', 'UVM2','UVW1','U','g.ZTF', 'r.ZTF']):
         f = (const.c / wl).to("GHz")
         flux = flux_conversion * data["lum"]
         
-        # for x in ["g", "r"]:
-        #     if x in band:
-        #         band = x
+        for x in ["g", "r"]:
+            if x in band:
+                band = x
+
+        print(band)
         
         ax1b.errorbar(data["#day_since_peak"] - t_offset, data["lum"], yerr=data["err_lum"], color=c,  fmt=markers[i], label=band)
-        lbl = "{1} ({0:0.0f})".format(bands[band].to("nm"), band.split('UV')[-1].split('.')[0])
+        lbl = "{1} ({0:0.0f})".format(bands[band].to("nm"), band)
         ax1.errorbar(data["#day_since_peak"] - t_offset, flux, yerr=flux_conversion *data["err_lum"], color=c,  fmt=markers[i], label=lbl)
 
 ax1.set_ylabel(r"$\nu F_{\nu}$ [erg cm$^{-2}$ s$^{-1}$]", fontsize=big_fontsize)
@@ -87,7 +89,7 @@ ax1b.tick_params(axis='both', which='major', labelsize=big_fontsize)
 ax2 = plt.subplot(212, sharex=ax1)
 ax2b = ax2.twinx()
 
-for i, base_label in enumerate(["0.2-10 keV (XRT)", "0.3-10 keV (XMM)"]):
+for i, base_label in enumerate(["0.3-10 keV (XRT)", "0.3-10 keV (XMM)"]):
     for j, ul in enumerate([False, True]):
         
         mask = np.logical_and(

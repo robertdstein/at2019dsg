@@ -1,0 +1,148 @@
+# date,jdobs,filter,absmag,magpsf,sigmamagpsf,limmag,instrument,programid,reducedby,refsys,issub,isdiffpos
+"2019 Apr 01",2458574.9859,"r", 99.0, 99.0,99.0, 17.79,"P48+ZTF","1","None","None",True,True
+"2019 Apr 01",2458575.0250,"g", 99.0, 99.0,99.0, 17.92,"P48+ZTF","1","None","None",True,True
+"2019 Apr 09",2458582.9648,"r", -17.86, 18.88,0.14, 20.02,"P48+ZTF","1","None","None",True,True
+"2019 Apr 09",2458582.9648,"r", -17.86, 18.88,0.14, 20.02,"P48+ZTF","1","None","None",True,True
+"2019 Apr 20",2458593.9459,"r", -18.44, 18.30,0.09, 19.24,"P48+ZTF","1","None","None",True,True
+"2019 Apr 20",2458593.9459,"r", -18.44, 18.30,0.09, 19.24,"P48+ZTF","1","None","None",True,True
+"2019 Apr 28",2458601.9897,"r", -18.72, 18.02,0.07, 20.29,"P48+ZTF","1","None","None",True,True
+"2019 Apr 28",2458601.9897,"r", -18.72, 18.02,0.07, 20.29,"P48+ZTF","1","None","None",True,True
+"2019 May 04",2458607.9696,"g", -18.90, 17.85,0.06, 20.92,"P48+ZTF","1","None","None",True,True
+"2019 May 04",2458607.9696,"g", -18.90, 17.85,0.06, 20.92,"P48+ZTF","1","None","None",True,True
+"2019 May 04",2458607.9853,"r", -18.78, 17.96,0.07, 20.68,"P48+ZTF","1","None","None",True,True
+"2019 May 13",2458616.9918,"r", -18.90, 17.84,0.01, 21.47,"P60+SEDM","None","Fremling Automated Pipeline PS1","PS1",True,True
+"2019 May 14",2458617.9627,"g", -18.87, 17.87,0.06, 20.84,"P48+ZTF","1","None","None",True,True
+"2019 May 15",2458618.7197,"g", -18.84, 17.90,0.01, 21.83,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 15",2458618.7208,"r", -18.70, 18.04,0.02, 21.58,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 15",2458618.7218,"i", -18.69, 18.05,0.02, 21.06,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 15",2458618.7229,"z", -18.73, 18.02,0.03, 20.43,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 17",2458620.6759,"UVW2", -19.55, 17.19,0.06, 20.95,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 May 20",2458623.7067,"g", -18.81, 17.93,0.01, 20.88,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 20",2458623.7078,"r", -18.62, 18.12,0.02, 22.19,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 20",2458623.7089,"i", -18.67, 18.07,0.01, 21.05,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 20",2458623.7099,"z", -18.65, 18.09,0.02, 20.88,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 21",2458624.5819,"UVW2", -19.46, 17.28,0.06, 21.02,"Swift+UVOT","None","None","None",False,True
+"2019 May 24",2458627.7029,"UVW2", -19.36, 17.38,0.06, 21.12,"Swift+UVOT","None","None","None",False,True
+"2019 May 25",2458628.9032,"r", -18.74, 18.01,0.08, 19.86,"P48+ZTF","1","None","None",True,True
+"2019 May 25",2458628.9606,"g", -18.79, 17.96,0.08, 19.84,"P48+ZTF","1","None","None",True,True
+"2019 May 27",2458630.8239,"UVW2", -19.31, 17.43,0.06, 21.13,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 May 29",2458632.7027,"g", -18.68, 18.06,0.02, 22.76,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 29",2458632.7038,"r", -18.54, 18.20,0.02, 22.13,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 29",2458632.7048,"i", -18.56, 18.18,0.03, 22.57,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 29",2458632.7059,"z", -18.61, 18.13,0.02, 22.82,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 May 30",2458634.0200,"UVW2", -19.40, 17.34,0.07, 20.65,"Swift+UVOT","None","None","None",False,True
+"2019 May 31",2458634.9227,"r", -18.55, 18.20,0.05, 20.85,"P48+ZTF","1","None","None",True,True
+"2019 May 31",2458634.9612,"g", -18.67, 18.07,0.07, 20.87,"P48+ZTF","1","None","None",True,True
+"2019 May 31",2458634.9785,"g", -18.70, 18.04,0.06, 20.28,"P48+ZTF","1","None","None",True,True
+"2019 Jun 02",2458636.5979,"UVW2", -19.25, 17.49,0.06, 21.34,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 Jun 03",2458637.9227,"r", -18.60, 18.14,0.05, 20.94,"P48+ZTF","1","None","None",True,True
+"2019 Jun 03",2458637.9617,"g", -18.62, 18.12,0.06, 21.05,"P48+ZTF","1","None","None",True,True
+"2019 Jun 05",2458640.3239,"UVW2", -19.20, 17.54,0.05, 21.59,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 Jun 06",2458640.9458,"g", -18.56, 18.19,0.07, 20.86,"P48+ZTF","1","None","None",True,True
+"2019 Jun 06",2458640.9632,"r", -18.50, 18.25,0.07, 20.88,"P48+ZTF","1","None","None",True,True
+"2019 Jun 08",2458642.9019,"UVW2", -19.16, 17.58,0.05, 21.52,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 Jun 10",2458644.9614,"r", -18.44, 18.30,0.06, 20.61,"P48+ZTF","1","None","None",True,True
+"2019 Jun 11",2458645.8239,"UVW2", -19.13, 17.61,0.06, 21.26,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Jun 13",2458647.9646,"g", -18.60, 18.14,0.09, 20.32,"P48+ZTF","1","None","None",True,True
+"2019 Jun 14",2458649.2929,"UVW2", -19.03, 17.71,0.06, 21.22,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Jun 16",2458650.9221,"r", -18.39, 18.35,0.10, 19.91,"P48+ZTF","1","None","None",True,True
+"2019 Jun 16",2458650.9597,"g", -18.36, 18.38,0.10, 19.74,"P48+ZTF","1","None","None",True,True
+"2019 Jun 19",2458653.6693,"g", -18.36, 18.38,0.03, 21.00,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 19",2458653.6704,"r", -18.16, 18.58,0.03, 20.88,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 19",2458653.6729,"i", -18.27, 18.48,0.02, 21.95,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 19",2458653.6739,"z", -18.33, 18.41,0.04, 21.25,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 19",2458653.8957,"g", -18.28, 18.46,0.10, 19.48,"P48+ZTF","1","None","None",True,True
+"2019 Jun 19",2458653.9190,"r", -18.34, 18.40,0.09, 19.72,"P48+ZTF","1","None","None",True,True
+"2019 Jun 19",2458654.0779,"UVW2", -18.94, 17.80,0.07, 20.88,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Jun 23",2458657.6747,"g", -18.25, 18.49,0.02, 22.98,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 23",2458657.6758,"r", -18.10, 18.65,0.01, 22.24,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 23",2458657.6793,"z", -18.25, 18.49,0.03, 20.64,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 23",2458657.9198,"r", -18.17, 18.57,0.09, 20.02,"P48+ZTF","1","None","None",True,True
+"2019 Jun 24",2458658.8982,"r", -18.19, 18.55,0.07, 20.42,"P48+ZTF","1","None","None",True,True
+"2019 Jun 26",2458660.9615,"r", 99.0, 99.0,99.0, 17.51,"P48+ZTF","1","None","None",True,True
+"2019 Jun 27",2458661.6468,"g", -18.21, 18.54,0.02, 22.28,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 27",2458661.6479,"r", -18.07, 18.67,0.02, 22.16,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 27",2458661.6504,"i", -18.13, 18.61,0.03, 23.04,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 27",2458661.6514,"z", -18.20, 18.55,0.02, 21.49,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Jun 27",2458661.8375,"r", -18.17, 18.58,0.08, 20.64,"P48+ZTF","1","None","None",True,True
+"2019 Jun 28",2458662.9243,"g", -18.19, 18.55,0.06, 20.89,"P48+ZTF","1","None","None",True,True
+"2019 Jun 28",2458662.9516,"g", -18.18, 18.56,0.08, 20.84,"P48+ZTF","2","None","None",True,True
+"2019 Jun 28",2458662.9692,"r", -18.13, 18.61,0.08, 20.77,"P48+ZTF","1","None","None",True,True
+"2019 Jun 29",2458663.9238,"r", -18.23, 18.51,0.10, 20.04,"P48+ZTF","1","None","None",True,True
+"2019 Jul 01",2458665.9209,"r", -18.09, 18.65,0.07, 20.76,"P48+ZTF","1","None","None",True,True
+"2019 Jul 01",2458665.9607,"g", -18.11, 18.63,0.07, 20.71,"P48+ZTF","1","None","None",True,True
+"2019 Jul 04",2458668.8562,"r", -18.09, 18.65,0.08, 20.80,"P48+ZTF","1","None","None",True,True
+"2019 Jul 04",2458668.9432,"g", -18.05, 18.70,0.08, 20.93,"P48+ZTF","1","None","None",True,True
+"2019 Jul 07",2458671.9454,"g", 99.0, 99.0,99.0, 16.55,"P48+ZTF","1","None","None",True,True
+"2019 Jul 10",2458674.9280,"g", -17.95, 18.79,0.09, 21.01,"P48+ZTF","1","None","None",True,True
+"2019 Jul 11",2458675.6559,"UVW2", -18.61, 18.13,0.08, 21.09,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 Jul 13",2458677.8104,"r", 99.0, 99.0,99.0, 20.23,"P48+ZTF","1","None","None",True,True
+"2019 Jul 16",2458680.6909,"UVW2", -18.53, 18.21,0.06, 21.51,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 Jul 16",2458680.8262,"r", -18.00, 18.74,0.11, 19.67,"P48+ZTF","1","None","None",True,True
+"2019 Jul 16",2458680.9454,"g", -17.93, 18.81,0.15, 19.26,"P48+ZTF","1","None","None",True,True
+"2019 Jul 20",2458684.9442,"r", -17.98, 18.77,0.13, 19.80,"P48+ZTF","1","None","None",True,True
+"2019 Jul 24",2458688.8209,"g", -17.85, 18.90,0.09, 20.66,"P48+ZTF","1","None","None",True,True
+"2019 Jul 27",2458691.8301,"g", -17.84, 18.90,0.08, 20.91,"P48+ZTF","1","None","None",True,True
+"2019 Jul 27",2458691.8743,"r", -17.92, 18.82,0.06, 20.42,"P48+ZTF","1","None","None",True,True
+"2019 Jul 28",2458692.9084,"g", -17.74, 19.01,0.05, 21.48,"P48+ZTF","2","None","None",True,True
+"2019 Jul 28",2458692.9119,"g", -17.75, 18.99,0.04, 21.46,"P48+ZTF","2","None","None",True,True
+"2019 Jul 28",2458692.9155,"g", -17.76, 18.99,0.03, 21.68,"P48+ZTF","2","None","None",True,True
+"2019 Jul 28",2458692.9383,"r", -17.86, 18.88,0.05, 21.28,"P48+ZTF","2","None","None",True,True
+"2019 Jul 28",2458692.9612,"g", -17.80, 18.95,0.04, 21.49,"P48+ZTF","2","None","None",True,True
+"2019 Jul 29",2458694.0939,"UVW2", -18.35, 18.39,0.07, 21.51,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 Jul 30",2458694.8301,"g", -17.73, 19.02,0.07, 20.94,"P48+ZTF","1","None","None",True,True
+"2019 Jul 30",2458694.8532,"r", -17.76, 18.98,0.10, 20.85,"P48+ZTF","1","None","None",True,True
+"2019 Jul 31",2458695.8909,"UVW2", -18.08, 18.66,0.10, 21.12,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 Aug 02",2458697.8947,"r", -17.71, 19.03,0.09, 20.75,"P48+ZTF","1","None","None",True,True
+"2019 Aug 04",2458699.8119,"UVW2", -18.03, 18.71,0.08, 21.49,"Swift+UVOT","None","Suvi Gezari","None",False,True
+"2019 Aug 05",2458700.9159,"r", 99.0, 99.0,99.0, 20.75,"P48+ZTF","1","None","None",True,True
+"2019 Aug 08",2458703.9046,"r", -17.58, 19.16,0.10, 20.70,"P48+ZTF","1","None","None",True,True
+"2019 Aug 08",2458703.9409,"UVW2", -18.24, 18.50,0.10, 20.96,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Aug 11",2458706.8924,"r", 99.0, 99.0,99.0, 20.09,"P48+ZTF","1","None","None",True,True
+"2019 Aug 12",2458707.9179,"UVW2", -18.03, 18.71,0.08, 21.41,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Aug 14",2458709.9418,"g", -17.43, 19.31,0.27, 19.42,"P48+ZTF","1","None","None",True,True
+"2019 Aug 17",2458712.7044,"g", -17.51, 19.24,0.16, 19.70,"P48+ZTF","1","None","None",True,True
+"2019 Aug 17",2458713.2929,"UVW2", -17.78, 18.96,0.08, 21.60,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Aug 20",2458715.8176,"r", 99.0, 99.0,99.0, 20.28,"P48+ZTF","1","None","None",True,True
+"2019 Aug 23",2458718.8294,"r", -17.38, 19.36,0.14, 20.39,"P48+ZTF","1","None","None",True,True
+"2019 Aug 26",2458721.8097,"r", 99.0, 99.0,99.0, 17.63,"P48+ZTF","1","None","None",True,True
+"2019 Aug 30",2458725.8178,"g", -17.16, 19.58,0.13, 20.76,"P48+ZTF","1","None","None",True,True
+"2019 Sep 03",2458729.7769,"UVW2", -17.62, 19.12,0.10, 21.41,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Sep 05",2458732.4339,"UVW2", -17.89, 18.85,0.12, 20.96,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Sep 06",2458732.7335,"r", 99.0, 99.0,99.0, 20.49,"P48+ZTF","1","None","None",True,True
+"2019 Sep 06",2458732.8037,"g", -17.12, 19.63,0.16, 20.42,"P48+ZTF","1","None","None",True,True
+"2019 Sep 06",2458732.8189,"i", 99.0, 99.0,99.0, 19.59,"P48+ZTF","2","None","None",True,True
+"2019 Sep 07",2458733.9409,"UVW2", -17.61, 19.13,0.15, 20.76,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Sep 10",2458736.8177,"i", 99.0, 99.0,99.0, 19.09,"P48+ZTF","2","None","None",True,True
+"2019 Sep 10",2458736.8728,"r", 99.0, 99.0,99.0, 19.48,"P48+ZTF","1","None","None",True,True
+"2019 Sep 12",2458739.4489,"g", -17.15, 19.59,0.09, 20.75,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Sep 12",2458739.4504,"r", -16.97, 19.77,0.09, 20.80,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Sep 12",2458739.4517,"i", -17.25, 19.50,0.05, 21.25,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Sep 17",2458743.5311,"g", -17.44, 19.30,0.13, 19.64,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Sep 17",2458743.5325,"r", -17.61, 19.13,0.12, 19.93,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Sep 17",2458743.5339,"i", -17.86, 18.88,0.20, 18.77,"LT+IOO","None","Taggart Automated Pipeline","PS1",True,True
+"2019 Sep 18",2458744.8404,"i", 99.0, 99.0,99.0, 19.35,"P48+ZTF","2","None","None",True,True
+"2019 Sep 18",2458744.8643,"r", 99.0, 99.0,99.0, 19.77,"P48+ZTF","1","None","None",True,True
+"2019 Sep 21",2458747.7777,"g", -16.88, 19.86,0.18, 20.46,"P48+ZTF","1","None","None",True,True
+"2019 Sep 22",2458748.7827,"i", 99.0, 99.0,99.0, 19.09,"P48+ZTF","2","None","None",True,True
+"2019 Sep 24",2458750.7087,"g", -16.81, 19.94,0.28, 19.91,"P48+ZTF","1","None","None",True,True
+"2019 Sep 24",2458750.7793,"r", 99.0, 99.0,99.0, 20.15,"P48+ZTF","1","None","None",True,True
+"2019 Sep 28",2458754.7079,"r", -17.20, 19.54,0.14, 20.62,"P48+ZTF","1","None","None",True,True
+"2019 Sep 28",2458754.7559,"g", -16.83, 19.91,0.17, 20.64,"P48+ZTF","1","None","None",True,True
+"2019 Oct 01",2458757.6740,"g", -16.87, 19.88,0.17, 20.70,"P48+ZTF","2","None","None",True,True
+"2019 Oct 01",2458757.6905,"g", -16.75, 19.99,0.19, 20.79,"P48+ZTF","1","None","None",True,True
+"2019 Oct 01",2458757.7814,"r", -17.20, 19.54,0.18, 20.19,"P48+ZTF","1","None","None",True,True
+"2019 Oct 02",2458758.6477,"r", -17.28, 19.46,0.07, 21.23,"P48+ZTF","2","None","None",True,True
+"2019 Oct 02",2458758.6885,"g", -16.95, 19.79,0.05, 21.61,"P48+ZTF","2","None","None",True,True
+"2019 Oct 02",2458758.7617,"i", 99.0, 99.0,99.0, 19.78,"P48+ZTF","2","None","None",True,True
+"2019 Oct 03",2458759.6902,"g", -16.98, 19.76,0.06, 21.64,"P48+ZTF","2","None","None",True,True
+"2019 Oct 05",2458761.5659,"UVW2", -17.38, 19.36,0.12, 21.20,"Swift+UVOT","48","Suvi Gezari","None",False,True
+"2019 Oct 05",2458761.5700,"UVW2", -17.35, 19.39,0.13, 22.25,"Swift+UVOT","None","sjoert","None",False,True
+"2019 Oct 10",2458766.5500,"UVW2", -17.31, 19.43,0.19, 21.85,"Swift+UVOT","None","sjoert","None",False,True
+"2019 Oct 10",2458766.8900,"UVW2", -17.19, 19.55,0.17, 22.05,"Swift+UVOT","None","sjoert","None",False,True
+"2019 Oct 10",2458767.4200,"UVW2", -17.46, 19.28,0.13, 22.24,"Swift+UVOT","None","sjoert","None",False,True
+"2019 Oct 10",2458767.4900,"UVW2", -17.58, 19.16,0.14, 22.09,"Swift+UVOT","None","sjoert","None",False,True
+"2019 Oct 15",2458771.9400,"UVW2", -17.38, 19.36,0.10, 22.60,"Swift+UVOT","None","sjoert","None",False,True
+"2019 Oct 20",2458776.7800,"UVW2", -17.41, 19.33,0.13, 22.32,"Swift+UVOT","None","sjoert","None",False,True
+"2019 Oct 30",2458786.9900,"UVW2", -17.39, 19.35,0.17, 21.87,"Swift+UVOT","None","sjoert","None",False,True
+"2019 Nov 05",2458792.9100,"UVW2", -16.95, 19.79,0.19, 22.09,"Swift+UVOT","48","sjoert","None",False,True
