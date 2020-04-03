@@ -5,7 +5,7 @@ from scipy.optimize import leastsq
 from sjoert import sync
 
 # local import
-from plots import big_fontsize, fig_width, label_line
+from plots import big_fontsize, fig_width
 from data import  bran_disc, t_peak_mjd
 import equipartition_functions 
 from importlib import reload
@@ -39,7 +39,7 @@ D_L = sjoert.stellar.lumdis(z, h=0.7)
 # read the radio data
 data_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
 
-#data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.05*data_rec['flux_mJy'], 1e99) # force errors?
+data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.05*data_rec['flux_mJy'], 1e99) # force 5% callibration errors?
 
 # ---
 #  input by hand the dates we want to fit the radius and B-field. 
