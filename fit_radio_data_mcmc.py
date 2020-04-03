@@ -64,19 +64,24 @@ B_arr = B_single[:,0]
 R_arr = np.log10(R_arr)
 B_arr = np.log10(B_arr)
 p_electron = 3.0										# electorn power-law index
-Fbase0 = 0.1 											# baseline flux in mJy @1.4 GHz
+Fbase0 = 0.0 											# baseline flux in mJy @1.4 GHz
 Fbase1 = -1 											# spectral index of baseline flux
 lnf = -2 												# fudge factor for errors
 
 # fix parameter:
 phi0 = pi/4.
 phi0 = 30/180*pi
-epsilon_e = 0.1
+
+epsilon_e = None # this forces equipartition witout hot protons
+
+epsilon_e = 0.1	 # here epsilon_e is the fraction of Baryon energy that does into the protons
+epsilon_B = 1e-3 # only used in the n_electron calculation for now 
+
 
 prior_dict={}
 #prior_dict["p_electron"] =  {"min":2.2,"max":4.00,"sigma":None,"value":p_electron}
-prior_dict["p_electron"] =  {"min":2.1,"max":4.00,"sigma":0.15,"value":3.0}
-prior_dict["Fbase0"] =  {"min":0,"max":0.12,"sigma":None,"value":Fbase0}
+prior_dict["p_electron"] =  {"min":2.1,"max":4.00,"sigma":0.15,"value":p_electron}
+prior_dict["Fbase0"] =  {"min":0,"max":0.10,"sigma":None,"value":Fbase0}
 prior_dict["Fbase1"] =  {"min":-2,"max":0,"sigma":None,"value":Fbase1}
 prior_dict["lnf"] =    {"min":-5,"max":-2,"sigma":None,"value":-3}
 
@@ -286,7 +291,7 @@ mjd0 = bran_disc.mjd
 #mjd0 = 58584 # original estimate of first detection
 
 samples_dict = {k:np.zeros((len(mjd_fit), Nlc)) for k in \
- 	('F_p', 'nu_p', 'R_SJ', 'R_cone', 'R_sphere', 'E_SJ','E_cone','E_sphere', 'B_SJ','B_sphere','B_cone',  'n_electr','N_electr','E_electr', 'v_SJ', 'v_cone', 'v_sphere')}
+ 	('F_p', 'nu_p', 'R_SJ', 'R_cone', 'R_sphere', 'E_SJ','E_cone','E_sphere', 'B_SJ','B_sphere','B_cone',  'n_electr_cone','N_electr_cone','E_electr', 'v_SJ', 'v_cone', 'v_sphere')}
 
 for i, mjd in enumerate(mjd_fit): 
 	
@@ -349,22 +354,30 @@ for i, mjd in enumerate(mjd_fit):
 				who = 'Barniol'				
 				samples_dict['R_cone'][i,l] = sync.Req(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
 				samples_dict['E_cone'][i,l] = sync.Eeq(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
-				samples_dict['B_cone'][i,l] = sqrt(samples_dict['E_cone'][i,l]/(1+11/6)*8*pi / (fV*pi*(samples_dict['R_cone'][i,l])**3))
+
+				cone_volume = (fV*pi*(samples_dict['R_cone'][i,l])**3)
+				samples_dict['B_cone'][i,l] = sqrt(samples_dict['E_cone'][i,l]/(1+11/6)*8*pi / cone_volume) # note this only works without hot protons
+
+				if epsilon_e is not None:
+					samples_dict['n_electr_cone'][i,l] = samples_dict['E_cone'][i,l]/(sync.me*sync.c**2) /(1+1/epsilon_e+epsilon_B) * (-this_p+2) / (-this_p-1) / gamma_min / cone_volume 
+				else:
+					samples_dict['n_electr_cone'][i,l] = samples_dict['E_cone'][i,l]/(sync.me*sync.c**2) /(1+6/11) * (-this_p+2) / (-this_p-1) / gamma_min / cone_volume 
 
 
 				# sphere
 				fA = 1 # one in Newtonian case...
 				fV = 4/3.
-
+				
 				samples_dict['R_sphere'][i,l] = sync.Req(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
 				samples_dict['E_sphere'][i,l] = sync.Eeq(this_model[imax], D_L, xx[imax], z, fA=fA, fV=fV, epsilon_e=epsilon_e, p=this_p, who=who)
-				samples_dict['B_sphere'][i,l] = sqrt(samples_dict['E_sphere'][i,l]/(1+11/6)*8*pi / (fV*pi*(samples_dict['R_sphere'][i,l])**3))
-
 				samples_dict['E_SJ'][i,l] =  4/3*pi*(this_R)**3 * (this_B)**2/(8*np.pi) 
-				
-				samples_dict['n_electr'][i,l] = 1/(1+1/epsilon_e) * sync.K(this_B, this_p) / (this_p-1)
-				samples_dict['N_electr'][i,l] = samples_dict['n_electr'][i,l] * (this_R**3) * 4/3.*pi
-				samples_dict['E_electr'][i,l] = sync.me * sync.c**2 * sync.K(this_B, this_p, eps_e=equipartition_functions.eps_e) / (this_p-2) * (this_R**3) * 4/3.*pi
+
+				sphere_volume = (fV*pi*(samples_dict['R_sphere'][i,l])**3)
+				samples_dict['B_sphere'][i,l] = sqrt(samples_dict['E_sphere'][i,l]*1/(1+11/6)*8*pi / sphere_volume) # note this only works without hot protons
+							
+				#n_electr_SJ = 1/(1+6/11) * sync.K(this_B, this_p) / (this_p-1) #original
+				#n_electr_sphere = samples_dict['E_sphere'][i,l]/(sync.me*sync.c**2) /(1+6/11) * (-this_p+2) / (-this_p-1) / gamma_min / sphere_volume
+				#print (np.log10(n_electr_SJ),  np.log10(n_electr_sphere))
 			else:
 				print ('rejecting sample')
 
@@ -379,8 +392,8 @@ plt.xlim(1.0,20)
 plt.ylim(0.05, 2)
 plt.xscale('log')
 plt.yscale('log')
-plt.xlabel('Frequency (GHz)', fontsize=big_fontsize)
-plt.ylabel('Flux (mJy)', fontsize=big_fontsize)
+plt.xlabel('Frequency [GHz]', fontsize=big_fontsize)
+plt.ylabel('Flux [mJy]', fontsize=big_fontsize)
 #plt.tight_layout()
 plt.savefig('./plots/at2019dsg_radio.pdf')
 
@@ -429,6 +442,8 @@ out_cols = \
  'eB_SJ', 
  'eB_sphere',
  'eB_cone',
+ 'n_electr_cone',
+ 'en_electr_cone',
  'v_SJ', 
  'v_sphere', 
  'v_cone',
@@ -436,7 +451,16 @@ out_cols = \
  'ev_sphere',
  'ev_cone']
 
-astropy.io.ascii.write([bf_rec[x] for x in out_cols], './data/at2019dsg_mcmc_time_eps_e{0:0.3f}.dat'.format(epsilon_e), 
+
+if epsilon_e is not None: 
+	eps_str = '_eps_e{0:0.3f}'.format(epsilon_e)
+else:
+	eps_str = '_equip'
+
+fname = './data/at2019dsg_mcmc_time{0}.dat'.format(eps_str)
+
+
+astropy.io.ascii.write([bf_rec[x] for x in out_cols], fname, 
 		format='fixed_width', 
 		names = out_cols,
 		formats={k:'0.3f' for k in out_cols},
@@ -474,11 +498,11 @@ xx = np.linspace(min(bf_rec['time'])-20, max(bf_rec['time'])+10)
 #xx = np.linspace(10, max(bf_rec['time'])+2)
 
 dEeqdt = (max(10**bf_rec['E_cone'])-min(10**bf_rec['E_cone']))/((mjd_fit[-1]-mjd_fit[0])/(1+z)*3600*24)
-axE.plot(xx, 10**(np.median(bf_rec['E_cone'])+np.log10((xx)/np.median(bf_rec['time'])))/1e48, ':',color='grey', alpha=1, 
+axE.plot(xx,  dEeqdt*3600*24*(xx-30)/1e48/(1+z), ':',color='grey', alpha=1, 
 			label=r'$\dot{{E}}_{{eq}} = {0:0.0f} \times 10^{{42}}$ erg/s'.format(dEeqdt/1e42))
 
 axR.plot(xx, (xx+5)*24*3600*0.16*3e10/1e16, ':',color='grey', alpha=1, 
-		label='$\dot{{R}}=0.16 c$')
+		label='$\dot{{R}}_{{eq}}=0.16 c$')
 
 axE.set_ylabel('$E_{eq}~(10^{48}$ erg)', fontsize=big_fontsize)
 axR.set_ylabel('$R_{eq}~(10^{16}$ cm)', fontsize=big_fontsize)
@@ -494,20 +518,16 @@ axR.legend(loc=2, fontsize=big_fontsize-2)
 f1.subplots_adjust(hspace=0.05)
 axE.tick_params(axis='both', which='major', labelsize=big_fontsize)
 axR.tick_params(axis='both', which='major', labelsize=big_fontsize)
-#plt.xscale('log')
-#plt.legend(loc=0)
-#xl = plt.xlim()
-#plt.legend(loc=2)
-#plt.pause(0.1)
+
 plt.savefig('./plots/at2019dsg_ER.pdf')
 key = input('next?)')
 
 
 plt.clf()
-plt.errorbar(bf_rec['R_cone'],bf_rec['n_electr'], xerr=bf_rec['eR_cone'], yerr=bf_rec['en_electr'], fmt='s')
+plt.errorbar(bf_rec['R_cone'],bf_rec['n_electr_cone'], xerr=bf_rec['eR_cone'], yerr=bf_rec['en_electr_cone'], fmt='s')
 xx = np.linspace(min(bf_rec['R_cone'])-0.1, max(bf_rec['R_cone'])+0.1)
-plt.plot(xx, np.median(bf_rec['n_electr'])-1*(xx-np.median(bf_rec['R_cone'])), '--', label='$n_e\propto R^{-1}$')
-plt.plot(xx, np.median(bf_rec['n_electr'])-3/2*(xx-np.median(bf_rec['R_cone'])), ':', label='$n_e\propto R^{-3/2}$')
+plt.plot(xx, np.median(bf_rec['n_electr_cone'])-1*(xx-np.median(bf_rec['R_cone'])), '--', label='$n_e\propto R^{-1}$')
+plt.plot(xx, np.median(bf_rec['n_electr_cone'])-3/2*(xx-np.median(bf_rec['R_cone'])), ':', label='$n_e\propto R^{-3/2}$')
 plt.legend()
 plt.ylabel('Electron number density (cm$^{-3}$)')
 plt.xlabel('Radius (cm)')

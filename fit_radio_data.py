@@ -89,6 +89,7 @@ plt.xlabel('Frequency (Ghz)')
 plt.ylabel('Flux (mJy)')
 plt.legend()
 plt.show()
+plt.title('p={0:0.1f}'.format(p_electron_single))
 plt.pause(0.01)
 
 plt.savefig('./plots/at2019dsg_radio_singlefit.pdf')

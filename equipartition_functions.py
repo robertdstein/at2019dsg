@@ -19,7 +19,7 @@ i_obs = 60/180.*pi
 gamma_max = 1e4
 gamma_min=2
 p_electron = 3
-eps_e = 1# 1/(6/11) # this is actually eps_e/eps_B 
+eps_e = 11/6 # this is actually eps_e/eps_B 
 
 # some defaults
 min_z = 100*3e5*1e6 # min inner jet radius 
@@ -337,8 +337,8 @@ for B in [0.05, 2]:
 	for nu in [1.5e9, 17e9]:
 		for p in [2.1,3.5]:
 			print ('{B, nu, p}=',B, nu/1e9, p)
-			print ('diff alpha (dex): {0:0.3f}'.format(float(interp_alpha([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.alpha_nu(B, nu, p, gamma_min=gamma_min)))))
-			print ('diff Ptot (dex): {0:0.3f}'.format(float(interp_Ptot([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.Ptot(B, nu, p, gamma_min=gamma_min)))))
+			print ('diff alpha (dex): {0:0.3f}'.format(float(interp_alpha([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.alpha_nu(B, nu, p, gamma_min=gamma_min,  gamma_max=gamma_max, eps_e=eps_e)))))
+			print ('diff Ptot (dex): {0:0.3f}'.format(float(interp_Ptot([np.log10(B), np.log10(nu), np.log10(p)])- np.log10(sync.Ptot(B, nu, p, gamma_min=gamma_min,  gamma_max=gamma_max, eps_e=eps_e)))))
 			print ('diff Snu (dex): {0:0.3f}'.format(float(np.log10(sync99_tab(np.log10(np.array([nu])),np.log10(np.array([B])), 1e16, np.log10(np.array([p]))))) \
 												- float(np.log10(sync99(nu, B, 1e16, p_electron=p, gamma_min=gamma_min, gamma_max=gamma_max, eps_e=eps_e)))))
 
