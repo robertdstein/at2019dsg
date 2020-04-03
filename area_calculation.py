@@ -4,7 +4,7 @@ from numpy import pi
 
 N=2000
 ddec = np.linspace(90, -90, N)
-rra =  np.linspace(0, 3600, N)
+rra =  np.linspace(0, 360, N)
 ll, bb  = radectolb(rra, ddec)
  
 # apply survey footprint and plane cut
