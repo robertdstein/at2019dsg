@@ -13,7 +13,7 @@ from equipartition_functions import *
 
 data_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
 
-data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.05*data_rec['flux_mJy'], 1e99) # force errors?
+data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.05*data_rec['flux_mJy'], 1e99) # force 5% errors
 
 mjd_plot = np.array([58625, 58653, 58703, 58761, ]) # 58818, not this last epoch has only MeerKAT and AMI data
 
