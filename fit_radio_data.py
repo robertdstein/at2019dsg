@@ -13,7 +13,7 @@ from equipartition_functions import *
 
 data_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
 
-data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.05*data_rec['flux_mJy'], 1e99) # force errors?
+data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.05*data_rec['flux_mJy'], 1e99) # force 5% errors
 
 mjd_plot = np.array([58625, 58653, 58703, 58761, ]) # 58818, not this last epoch has only MeerKAT and AMI data
 
@@ -89,6 +89,7 @@ plt.xlabel('Frequency (Ghz)')
 plt.ylabel('Flux (mJy)')
 plt.legend()
 plt.show()
+plt.title('p={0:0.1f}'.format(p_electron_single))
 plt.pause(0.01)
 
 plt.savefig('./plots/at2019dsg_radio_singlefit.pdf')
