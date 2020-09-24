@@ -9,7 +9,7 @@ import equipartition_functions
 from importlib import reload
 reload(equipartition_functions)
 from equipartition_functions import *
-
+import matplotlib.pyplot as plt
 
 data_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
 

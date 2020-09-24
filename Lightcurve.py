@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 from astropy import units as u
 import numpy as np
-from data import photometry_data, radio_data, bran_disc, t_neutrino, xray_data, t_peak_mjd, gamma_data, gamma_deintegrate
+from data import photometry_data, bran_disc, t_neutrino, xray_data, t_peak_mjd, gamma_data, bran_z
 from astropy import constants as const
 from flux_utils import flux_conversion, convert_radio, colors, bands, bran_z
 from plots import big_fontsize, fig_width
 from astropy.time import Time
+plt.rcParams["font.family"] = "sans-serif"
 
 times = []
 delta_lum = []
@@ -21,7 +22,7 @@ flux_conversion *= (1+bran_z) # currently missing
 
 # Plot luminosity
 #bran_disc.mjd = 58584 # mjd0 from radio plots/tables...
-t_offset = bran_disc.mjd - t_peak_mjd.mjd
+t_offset = (bran_disc.mjd - t_peak_mjd.mjd)
 
 markers = ["o", "*", "s", "2", "+", "d"]
 
@@ -38,16 +39,14 @@ for i, band in enumerate(['UVW2', 'UVM2','UVW1','U','g.ZTF', 'r.ZTF']):
             if x in band:
                 band = x
 
-        print(band)
-        
-        ax1b.errorbar(data["#day_since_peak"] - t_offset, data["lum"], yerr=data["err_lum"], color=c,  fmt=markers[i], label=band)
+        ax1b.errorbar(data["#day_since_peak"]*(1 + bran_z) - t_offset*(1 + bran_z), data["lum"], yerr=data["err_lum"], color=c,  fmt=markers[i], label=band)
         lbl = "{1} ({0:0.0f})".format(bands[band].to("nm"), band)
-        ax1.errorbar(data["#day_since_peak"] - t_offset, flux, yerr=flux_conversion *data["err_lum"], color=c,  fmt=markers[i], label=lbl)
+        ax1.errorbar(data["#day_since_peak"]*(1 + bran_z)- t_offset*(1 + bran_z), flux, yerr=flux_conversion *data["err_lum"], color=c,  fmt=markers[i], label=lbl)
 
 ax1.set_ylabel(r"$\nu F_{\nu}$ [erg cm$^{-2}$ s$^{-1}$]", fontsize=big_fontsize)
 ax1b.set_ylabel(r"$\nu L_{\nu}$ [erg s$^{-1}$]", fontsize=big_fontsize)
 ax1.legend(fontsize=big_fontsize-2, ncol=2, loc="upper right")
-y_low = 2.5*10**-13
+y_low = 1.5*10**-13
 y_up = 3.3*10**-11
 ax1.set_ylim(y_low, y_up)
 ax1b.set_ylim(y_low/flux_conversion, y_up/flux_conversion)
