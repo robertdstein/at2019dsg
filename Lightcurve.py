@@ -6,6 +6,7 @@ from astropy import constants as const
 from flux_utils import flux_conversion, convert_radio, colors, bands, bran_z
 from plots import big_fontsize, fig_width
 from astropy.time import Time
+import astropy.io.ascii
 plt.rcParams["font.family"] = "sans-serif"
 
 times = []
@@ -59,27 +60,55 @@ ax1b.set_yscale("log")
 from importlib import reload
 import lc_fitting
 reload(lc_fitting)
-from lc_fitting import nu_kc, nu_nuv, gauss_exp
+from lc_fitting import nu_kc, nu_nuv, gauss_exp, gauss_PL, cc_bol
 xx = np.linspace(-1,max(photometry_data["#day_since_peak"]-t_offset)+10, 1000)
-p = [0, 43.25, 1.2, 1.6, 4.61]
+
+
 nu_plot = nu_nuv
 pick_band = "UVW2"
 #nu_plot = (const.c  / bands["r.ZTF"].to("m")).to("Hz").value
 nu_plot = (const.c  / bands[pick_band].to("m")).to("Hz").value / (1+bran_z)
 
-const_model = 9e42 * np.exp(-0.5*np.clip(xx+t_offset, -30,0)**2/(10**p[2])**2)  
-exp_model = gauss_exp(p, (xx+t_offset)/(1+0.05), nu_plot)
+p_exp = [0, 43.95, 1.2, 1.8, 4.49]
+p_exp_wdisk =  [0, 43.95, 1.2, 1.65, 4.49]
+
+const_model = np.repeat(8e42, len(xx)) #5e42 * np.exp(-0.5*np.clip(xx+t_offset, -30,0)**2/(10**p_exp_wdisk[2])**2)  
+exp_model = gauss_exp(p_exp, (xx+t_offset), nu_plot)
+exp_model_steep = gauss_exp(p_exp_wdisk, (xx+t_offset), nu_plot)
+
+p_pl_flex =  [0,44.45, 1.2, 1.51322338,-1.493404,4.49,0]
+p_pl_mono =  [0,44.47, 1.2, 1.78, -5/3,4.49,0]
+pl_model_flex = gauss_PL(p_pl_flex, (xx+t_offset), nu_plot)
+pl_model_mono = gauss_PL(p_pl_mono, (xx+t_offset), nu_plot)
+
+
+lc_data0 = astropy.io.ascii.read('./BranStark_lcfit.dat', format='fixed_width')
+lc_data = lc_data0[lc_data0['band']=='UVW2']
+
+T_flex = np.interp( (xx+t_offset), lc_data['day_since_peak'], lc_data['T_bb'])
+#pl_flex_nu = lc_data['lum_bb'] * cc_bol(lc_data['T_bb'], nu_plot)
+cc_corr = cc_bol(T_flex, nu_plot)
+cc_corr /= min(cc_corr) 
+#cc_corr = cc_corr*0+1
+
 c = colors[pick_band]
 
 alpha_break = min(photometry_data[photometry_data["band"] == pick_band]["#day_since_peak"])-t_offset
 for l, alh in zip([0,1], [0.4, 0.8]):
-	ipl = (xx>=alpha_break)==l
-	ax1b.plot(xx[ipl], exp_model[ipl], ":", color=c, alpha=alh)
-	ax1b.plot(xx[ipl], (exp_model+const_model)[ipl], "--", color=c, alpha=alh)
+    ipl = (xx>=alpha_break)==l
+    ax1b.plot(xx[ipl], exp_model[ipl], ":", color=c, alpha=alh)
+    #ax1b.plot(xx[ipl], (exp_model_steep+const_model)[ipl], "-", color=c, alpha=alh)
+    ax1b.plot(xx[ipl], pl_model_mono[ipl], "--", color=c, alpha=alh)
+    ipl = (xx+t_offset)>15
+    #ax1b.plot(xx[ipl], pl_model_flex[ipl]*cc_corr[ipl], "--", color=c, alpha=alh)
+    
+    #ax1b.plot(xx[ipl], pl_flex_nu, "-", color=c, alpha=alh)
+
 #ax1b.plot(xx, const_model, ":", color=c)
-text = ax1b.annotate(r'$L\propto e^{-t}$', (130, 3.7e42), color=c, size=big_fontsize-1)
-text.set_rotation(-30)
-text = ax1b.annotate(r'$L\propto e^{-t}+disk$', (190, 1.5e43), color=c, size=big_fontsize-1)
+text = ax1b.annotate(r'$L_\nu \propto e^{-t}$', (205, 2.8e42), color=c, size=big_fontsize-1)
+text.set_rotation(-22)
+#text = ax1b.annotate(r'$L\propto e^{-t}+disk$', (190, 1.5e43), color=c, size=big_fontsize-1)
+text = ax1b.annotate(r'$L_{\nu} \propto t^{-5/3}$', (190, 1.6e43), color=c, size=big_fontsize-1)
 
 ax1.axvline(t_neutrino.mjd - bran_disc.mjd, color="k", linestyle=":", label="IC191001A")
 ax1.tick_params(axis='both', which='major', labelsize=big_fontsize)
