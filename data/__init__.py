@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from astropy.time import Time
 from astropy import units as u
+import astropy.io.ascii
 import pandas as pd
 import numpy as np
 
@@ -135,6 +136,17 @@ gamma_data = pd.read_table(gamma_path, sep=",")
 
 gamma_data["UL(95)"] *= (1.* u.MeV).to("erg").value
 gamma_deintegrate = np.log(800/0.1)
+
+
+# SVV addition: 
+radio_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
+
+# force 5% callibration errors (no on MeerKAT because these have already been applied)
+iincr = (radio_rec['inst']!='MeerKAT') * (radio_rec['eflux_mJy']>0)
+radio_rec['eflux_mJy'][iincr] = np.sqrt(radio_rec[iincr]['eflux_mJy']**2+ (0.05*radio_rec[iincr]['flux_mJy'])**2) # add 5% errors
+
+
+
 
 # =================================
 # ASASSN-14li data
