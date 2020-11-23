@@ -45,7 +45,7 @@ for m in meerkat:
 	data_rec['eflux_mJy'][l] = m['flux_err_mJy']
 	data_rec['date'][l] = sjoert.simtime.mjdtodate(data_rec['mjd'][l]).strftime('%y/%m/%d')    
 	data_rec['inst'][l] = 'MeerKAT'
-	data_rec['nu_GHz'][l] = 1.4
+	data_rec['nu_GHz'][l] = 1.280
 	l+=1	
 
 vlalist = glob.glob('./data/at2019dsg_20*')
