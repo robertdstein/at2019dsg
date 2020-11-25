@@ -82,7 +82,7 @@ pl_model_flex = gauss_PL(p_pl_flex, (xx+t_offset), nu_plot)
 pl_model_mono = gauss_PL(p_pl_mono, (xx+t_offset), nu_plot)
 
 
-lc_data0 = astropy.io.ascii.read('./BranStark_lcfit.dat', format='fixed_width')
+lc_data0 = astropy.io.ascii.read('./data/BranStark_lcfit.dat', format='fixed_width') # this file is also published with the ZTF discovery paper (vanVelzen+20)
 lc_data = lc_data0[lc_data0['band']=='UVW2']
 
 T_flex = np.interp( (xx+t_offset), lc_data['day_since_peak'], lc_data['T_bb'])
