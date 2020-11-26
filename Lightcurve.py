@@ -1,11 +1,9 @@
 import matplotlib.pyplot as plt
-from astropy import units as u
 import numpy as np
-from data import photometry_data, bran_disc, t_neutrino, xray_data, t_peak_mjd, gamma_data, bran_z
+from data import photometry_data, bran_disc, t_neutrino, xray_data, t_peak_mjd, gamma_data
 from astropy import constants as const
-from flux_utils import flux_conversion, convert_radio, colors, bands, bran_z
+from flux_utils import flux_conversion, colors, bands, bran_z
 from plots import big_fontsize, fig_width
-from astropy.time import Time
 import astropy.io.ascii
 plt.rcParams["font.family"] = "sans-serif"
 
@@ -19,10 +17,7 @@ plt.figure(figsize=(fig_width * 2., fig_width * 1.5))
 ax1 = plt.subplot(211)
 ax1b = ax1.twinx()
 
-flux_conversion *= (1+bran_z) # currently missing
-
 # Plot luminosity
-#bran_disc.mjd = 58584 # mjd0 from radio plots/tables...
 t_offset = (bran_disc.mjd - t_peak_mjd.mjd)
 
 markers = ["o", "*", "s", "2", "+", "d"]
@@ -53,7 +48,6 @@ ax1.set_ylim(y_low, y_up)
 ax1b.set_ylim(y_low/flux_conversion, y_up/flux_conversion)
 ax1.set_yscale("log")
 ax1b.set_yscale("log")
-# ax1b.set_ylim(2.*10**-11/flux_conversion, 2.*10**-9/flux_conversion)
 
 # ---
 # try model fit
@@ -66,7 +60,6 @@ xx = np.linspace(-1,max(photometry_data["#day_since_peak"]-t_offset)+10, 1000)
 
 nu_plot = nu_nuv
 pick_band = "UVW2"
-#nu_plot = (const.c  / bands["r.ZTF"].to("m")).to("Hz").value
 nu_plot = (const.c  / bands[pick_band].to("m")).to("Hz").value / (1+bran_z)
 
 p_exp = [0, 43.95, 1.2, 1.8, 4.49]
@@ -86,10 +79,8 @@ lc_data0 = astropy.io.ascii.read('./data/BranStark_lcfit.dat', format='fixed_wid
 lc_data = lc_data0[lc_data0['band']=='UVW2']
 
 T_flex = np.interp( (xx+t_offset), lc_data['day_since_peak'], lc_data['T_bb'])
-#pl_flex_nu = lc_data['lum_bb'] * cc_bol(lc_data['T_bb'], nu_plot)
 cc_corr = cc_bol(T_flex, nu_plot)
 cc_corr /= min(cc_corr) 
-#cc_corr = cc_corr*0+1
 
 c = colors[pick_band]
 
@@ -97,17 +88,11 @@ alpha_break = min(photometry_data[photometry_data["band"] == pick_band]["#day_si
 for l, alh in zip([0,1], [0.4, 0.8]):
     ipl = (xx>=alpha_break)==l
     ax1b.plot(xx[ipl], exp_model[ipl], ":", color=c, alpha=alh)
-    #ax1b.plot(xx[ipl], (exp_model_steep+const_model)[ipl], "-", color=c, alpha=alh)
     ax1b.plot(xx[ipl], pl_model_mono[ipl], "--", color=c, alpha=alh)
     ipl = (xx+t_offset)>15
-    #ax1b.plot(xx[ipl], pl_model_flex[ipl]*cc_corr[ipl], "--", color=c, alpha=alh)
-    
-    #ax1b.plot(xx[ipl], pl_flex_nu, "-", color=c, alpha=alh)
 
-#ax1b.plot(xx, const_model, ":", color=c)
 text = ax1b.annotate(r'$L_\nu \propto e^{-t}$', (205, 2.8e42), color=c, size=big_fontsize-1)
 text.set_rotation(-22)
-#text = ax1b.annotate(r'$L\propto e^{-t}+disk$', (190, 1.5e43), color=c, size=big_fontsize-1)
 text = ax1b.annotate(r'$L_{\nu} \propto t^{-5/3}$', (190, 1.6e43), color=c, size=big_fontsize-1)
 
 ax1.axvline(t_neutrino.mjd - bran_disc.mjd, color="k", linestyle=":", label="IC191001A")
@@ -143,15 +128,9 @@ for i, base_label in enumerate(["0.3-10 keV (XRT)", "0.3-10 keV (XMM)"]):
             
         ax2.errorbar(data["MJD"]-bran_disc.mjd, data["flux"], yerr=yerr, xerr=xerr,  fmt=marker, label=label, color=col, uplims=ul, alpha=alpha,ms=ms)
         ax2b.errorbar(data["MJD"]-bran_disc.mjd, data["flux"]/flux_conversion, yerr=yerr/flux_conversion, xerr=xerr, fmt=marker, color=col, uplims=ul, alpha=alpha,ms=ms)
-# ax2.errorbar(xray_ul_data["#MJD"]-bran_disc.mjd, xray_ul_data["flux"], yerr=0.2*xray_ul_data["flux"], xerr=1., uplims=True, fmt=' ', color="k")
-# ax3b.errorbar(xray_data["#MJD"]-t_peak_mjd.mjd, 10.**xray_data["log_lum"], yerr=10.**xray_data["log_lum_err"], label="0.2-10 keV",  fmt='o',)
 
 gx = 0.5*(gamma_data["MJD_start"] + gamma_data["MJD_stop"]) - bran_disc.mjd
 xerr = 0.5*(gamma_data["MJD_stop"] - gamma_data["MJD_start"])
-# print(xerr)
-# ax1.errorbar(gx, gamma_data["UL(95)"], xerr=xerr, yerr=0.5*gamma_data["UL(95)"], uplims=True, fmt=' ', label="0.1-800 GeV")
-# ax1b.errorbar(gx, gamma_data["UL(95)"]/flux_conversion, xerr=xerr, yerr=0.5*gamma_data["UL(95)"], uplims=True, fmt=' ', label="0.1-800 GeV")
-
 
 ax2.set_ylabel(r"$F_{X}$ [erg cm$^{-2}$ s$^{-1}$]", fontsize=big_fontsize)
 ax2b.set_ylabel(r"$L_{x}$ [erg s$^{-1}$]", fontsize=big_fontsize)
@@ -168,32 +147,8 @@ ymin = 0.9 * 10**-14
 ax2.set_ylim(ymin, ymax)
 ax2b.set_ylim(ymin/flux_conversion, ymax/flux_conversion)
 
-# ax3 = plt.subplot(313, sharex=ax1)
-# ax3b = ax3.twinx()
-
-# for frequency in [1.4, 5.6, 10.2, 15.5]:
-#     data = radio_data[abs(radio_data["frequency"] - frequency) < 0.5]
-#     data = data.sort_values("mjd")
-#     ax3.errorbar(data["mjd"]- bran_disc.mjd, convert_radio(data["flux"], frequency),  yerr=convert_radio(data["flux_err"], frequency), marker="o", label="{0} Ghz".format(frequency))
-#     ax3b.errorbar(data["mjd"]- bran_disc.mjd, convert_radio(data["flux"], frequency)/flux_conversion,  yerr=convert_radio(data["flux_err"], frequency)/flux_conversion, marker="o", label="{0} Ghz".format(frequency))
-
-# ax3.set_ylabel(r"$\nu F_{\nu}$ [erg cm$^{-2}$ s$^{-1}$]", fontsize=big_fontsize)
-# ax3b.set_ylabel(r"$\nu L_{\nu}$ [erg s$^{-1}$]", fontsize=big_fontsize)
-# ax3.legend(fontsize=big_fontsize-1)
-# ax3.set_yscale("log")
-# ax3b.set_yscale("log")
-# ax3.axvline(t_neutrino.mjd - bran_disc.mjd, color="k", linestyle=":", label="IC191001A")
-# ax3.tick_params(axis='both', which='major', labelsize=big_fontsize)
-# ax3b.tick_params(axis='both', which='major', labelsize=big_fontsize)
- 
-
-# ax2 = plt.subplot2grid((4, 1), (3, 0), colspan=3, rowspan=1, sharex=ax1)
-# ax2.scatter(index_times, photon_index)
-# ax2.set_ylabel(r"$\frac{d(Log(\nu L_{\nu}))}{d(Log(f))}$", fontsize=12)
-# plt.axhline(2.0, color="k", linestyle=":")
 
 ax2.set_xlim(-5., 240.)
-ax2.set_xlabel("Days since discovery", fontsize=big_fontsize)
+ax2.set_xlabel("Time since discovery [d]", fontsize=big_fontsize)
 plt.tight_layout()
-#plt.subplots_adjust(hspace=.0)
 plt.savefig("plots/lightcurve_wfit.pdf")
