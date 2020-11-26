@@ -15,7 +15,7 @@ def convert_to_mjy(energy_flux, frequency_ghz):
 dl = Distance(z=bran_z).to("cm").value
 area = 4 * np.pi * (dl ** 2)
 
-flux_conversion = 1./area
+flux_conversion =  (1+bran_z)/area
 
 colors = {
     "r.IOO": "r",
