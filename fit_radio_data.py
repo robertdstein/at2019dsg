@@ -1,15 +1,11 @@
 import astropy.io.ascii
-from scipy.optimize import leastsq
-
-# personal import
-from sjoert import sync
+import logging
 
 # local import
-import equipartition_functions 
-from importlib import reload
-reload(equipartition_functions)
+import equipartition_functions
 from equipartition_functions import *
 import matplotlib.pyplot as plt
+from scipy.optimize import leastsq
 
 data_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
 
@@ -55,7 +51,7 @@ for i, mjd in enumerate(mjd_plot):
 		#p0 = [lsq[0][0], lsq[0][1]] # guess next initial parameters
 
 		#if lsq[1] is not None:
-		print ('''single-zone:\nB={0:0.3f} +/- {1:0.3f} G\nd=({2:0.2f} +/- {3:0.2f})x10^16 cm'''.format(lsq[0][0],  sqrt(lsq[1][0][0]), lsq[0][1]/1e16, sqrt(lsq[1][1][1])/1e16)		)
+		logging.debug('''single-zone:\nB={0:0.3f} +/- {1:0.3f} G\nd=({2:0.2f} +/- {3:0.2f})x10^16 cm'''.format(lsq[0][0],  sqrt(lsq[1][0][0]), lsq[0][1]/1e16, sqrt(lsq[1][1][1])/1e16)		)
 
 		B_single[i,:], R_single[i,:] = (lsq[0][0],  sqrt(lsq[1][0][0])), (lsq[0][1], sqrt(lsq[1][1][1]))
 		# if len(p0)>2: 
@@ -75,9 +71,9 @@ for i, mjd in enumerate(mjd_plot):
 		plt.plot(xx/1e9, fit_single(xx, lsq[0])*1e23*1e3,  '--',alpha=0.7, color=line[0].get_color()) #label=ll1
 		ll1=''		
 
-		print ('chi2:', sum(lsq[2]['fvec']**2)/(sum(ii)-len(p0)))
-		print ('cooling time at 16 GHz (day)', sync.cooling99(lsq[0][0], 16e9)/3600/24)
-		print ('energy in magnetic field', E_single[i,0])
+		logging.debug('chi2:', sum(lsq[2]['fvec']**2)/(sum(ii)-len(p0)))
+		logging.debug('cooling time at 16 GHz (day)', sync.cooling99(lsq[0][0], 16e9)/3600/24)
+		logging.debug('energy in magnetic field', E_single[i,0])
 		#print ('cooling time at 16*(t-300) GHz (day)', sync.cooling_extra(lsq[0][0], 16e9*np.clip(300-t,1,300))/3600/24)
 		plt.pause(0.01)
 
@@ -94,13 +90,10 @@ plt.title('p={0:0.1f}'.format(p_electron_single))
 plt.pause(0.01)
 
 plt.savefig('./plots/at2019dsg_radio_singlefit.pdf')
-key = input()
 
 for i in [1,2,3]:
-	print (mjd_plot[i]-mjd_plot[0], 'v/c from R_eq     (spherical emitting region):', (R_single[i,0]-R_single[i-1,0]) / ((mjd_plot[i]-mjd_plot[i-1])*3600*24) / 3e10) 
-print ('v/c for neutrino  (spherical emitting region):', (R_single[3,0]-1e15) / ((5)*3600*24) / 3e10) 
-
-
+	logging.info(f"{mjd_plot[i]-mjd_plot[0]}, v/c from R_eq    (spherical emitting region): {(R_single[i,0]-R_single[i-1,0]) / ((mjd_plot[i]-mjd_plot[i-1])*3600*24) / 3e10}")
+logging.info('v/c for neutrino  (spherical emitting region): {(R_single[3,0]-1e15) / ((5)*3600*24) / 3e10}')
 
 plt.clf()
 idx = R_single[:,0]>0
@@ -121,7 +114,6 @@ plt.plot(mjd_plot-mjd_plot[0], E_eq, '-s')
 plt.xlabel('Time (day since first radio detection)')
 plt.ylabel('Equipartion energy (erg)')
 plt.pause(0.01)
-key = input()
 
 fname = 'at2019dsg_RB_fit_p{0:0.1f}.dat'.format(p_electron_single)
 sjoert.io.writecols(cols=[R_single[:,0],R_single[:,1], B_single[:,0], B_single[:,1]],
