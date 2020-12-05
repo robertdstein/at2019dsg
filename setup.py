@@ -36,6 +36,9 @@ setuptools.setup(
         "catsHTM",
         "flarestack",
         "pyregion",
+        "pytest",
+        "pytest-cov",
+        "nbval",
         "sjoert @ https://github.com/sjoertvv/sjoert/archive/3308c1afe111693da0821b6d8b24a0439f0a648c.zip",
         "k3match @ https://github.com/pschella/k3match/archive/master.zip"
     ],
