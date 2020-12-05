@@ -13,4 +13,5 @@ pytest
 pytest-cov
 nbval
 pylatex
+coveralls
 git+https://github.com/pschella/k3match@master
