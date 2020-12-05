@@ -130,12 +130,15 @@ xray_data = pd.concat([
     ignore_index = True
 )
 
+xmm_image_file = os.path.join(data_dir, 'PNimage.fits')
 
 gamma_path = os.path.join(data_dir, "TDE_uls_FermiLAT.txt")
 gamma_data = pd.read_table(gamma_path, sep=",")
 
 gamma_data["UL(95)"] *= (1.* u.MeV).to("erg").value
 gamma_deintegrate = np.log(800/0.1)
+
+data_roi = np.load(os.path.join(data_dir, 'LAT_G3_model.npy'), allow_pickle=True, encoding="bytes").flat[0]
 
 
 # SVV addition: 
