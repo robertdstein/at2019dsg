@@ -15,4 +15,5 @@ nbval
 pylatex
 ffmpeg-python
 gammapy
+tqdm
 git+https://github.com/pschella/k3match@master
