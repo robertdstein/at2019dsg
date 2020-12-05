@@ -13,5 +13,6 @@ pytest
 pytest-cov
 nbval
 pylatex
-coveralls
+ffmpeg-python
+gammapy
 git+https://github.com/pschella/k3match@master
