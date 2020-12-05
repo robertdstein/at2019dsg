@@ -131,7 +131,7 @@ xray_data = pd.concat([
 )
 
 
-gamma_path = os.path.join(data_dir, "TDE_uls_FermiLAT")
+gamma_path = os.path.join(data_dir, "TDE_uls_FermiLAT.txt")
 gamma_data = pd.read_table(gamma_path, sep=",")
 
 gamma_data["UL(95)"] *= (1.* u.MeV).to("erg").value
@@ -139,7 +139,7 @@ gamma_deintegrate = np.log(800/0.1)
 
 
 # SVV addition: 
-radio_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
+radio_rec = astropy.io.ascii.read('at2019dsg/data/at2019dsg_merged.dat', format='fixed_width')
 
 # force 5% callibration errors (no on MeerKAT because these have already been applied)
 iincr = (radio_rec['inst']!='MeerKAT') * (radio_rec['eflux_mJy']>0)
@@ -192,5 +192,5 @@ aeff_ehe = pd.read_csv(ehe_path, names=["E_TeV", "A_eff"])
 hese_path = os.path.join(data_dir, "Aeff_hese.csv")
 aeff_hese = pd.read_csv(hese_path, names=["E_TeV", "A_eff"])
 
-spectra_dir = os.path.join(data_dir, "ZTF19aapreis_spectra")
+spectra_dir = os.path.join(data_dir, "spectra")
 spectra_paths = sorted([os.path.join(spectra_dir, x) for x in os.listdir(spectra_dir) if "ZTF19aapreis" in x])

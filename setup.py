@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.1.0",
     author="Robert Stein",
     author_email="robert.stein@desy.de",
-    description="Package with analysis code and data for at2019dsg",
+    description="Package with core code and data for at2019dsg",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",

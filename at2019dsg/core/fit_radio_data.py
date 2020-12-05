@@ -1,8 +1,8 @@
 import astropy.io.ascii
 
 # local import
-from at2019dsg.analysis import equipartition_functions
-from at2019dsg.analysis.equipartition_functions import *
+from at2019dsg.core import equipartition_functions
+from at2019dsg.core.equipartition_functions import *
 import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
 

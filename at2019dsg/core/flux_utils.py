@@ -1,7 +1,7 @@
 import numpy as np
 from astropy.coordinates import Distance
 from astropy import units as u
-from data import bran_z
+from at2019dsg.data import bran_z
 
 def convert_radio(flux_mjy, frequency_ghz):
     flux_jy = 10**-3 * flux_mjy
