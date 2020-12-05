@@ -9,5 +9,7 @@ matrix:
   - python: 3.9
 script:
   - py.test --cov=at2019dsg --nbval figure_*
+after_success:
+  - coveralls
 notifications:
   email: false
