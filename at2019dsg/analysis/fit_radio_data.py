@@ -1,9 +1,8 @@
 import astropy.io.ascii
-import logging
 
 # local import
-import equipartition_functions
-from equipartition_functions import *
+from at2019dsg.analysis import equipartition_functions
+from at2019dsg.analysis.equipartition_functions import *
 import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
 
@@ -47,7 +46,7 @@ for i, mjd in enumerate(mjd_plot):
 		Fnu_err = data_rec[ii]['eflux_mJy'] 
 
 		p0 = [0.1, 1e16]
-		lsq = leastsq(res_single, p0, (nu*1e9*(1+equipartition_functions.z), Fnu, Fnu_err), full_output=True)
+		lsq = leastsq(res_single, p0, (nu * 1e9 * (1 + equipartition_functions.z), Fnu, Fnu_err), full_output=True)
 		#p0 = [lsq[0][0], lsq[0][1]] # guess next initial parameters
 
 		#if lsq[1] is not None:
