@@ -17,7 +17,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install latex
-      run: sudo apt-get install texlive-base
+      run: $CONDA/bin/conda install -c conda-forge miktex
     - name: Install dependencies
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
