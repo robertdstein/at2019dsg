@@ -139,7 +139,7 @@ gamma_deintegrate = np.log(800/0.1)
 
 
 # SVV addition: 
-radio_rec = astropy.io.ascii.read('at2019dsg/data/at2019dsg_merged.dat', format='fixed_width')
+radio_rec = astropy.io.ascii.read(os.path.join(data_dir, 'at2019dsg_merged.dat'), format='fixed_width')
 
 # force 5% callibration errors (no on MeerKAT because these have already been applied)
 iincr = (radio_rec['inst']!='MeerKAT') * (radio_rec['eflux_mJy']>0)

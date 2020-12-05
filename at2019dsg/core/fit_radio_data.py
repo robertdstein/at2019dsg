@@ -1,12 +1,14 @@
 import astropy.io.ascii
-
+import os
 # local import
 from at2019dsg.core import equipartition_functions
 from at2019dsg.core.equipartition_functions import *
+from at2019dsg.data import data_dir
+from at2019dsg.plotting import plot_dir
 import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
 
-data_rec = astropy.io.ascii.read('./data/at2019dsg_merged.dat', format='fixed_width')
+data_rec = astropy.io.ascii.read(os.path.join(data_dir, 'at2019dsg_merged.dat'), format='fixed_width')
 
 #data_rec['eflux_mJy'] = np.clip(data_rec['eflux_mJy'], 0.05*data_rec['flux_mJy'], 1e99) # force 5% errors
 data_rec['eflux_mJy'] = np.sqrt(data_rec['eflux_mJy']**2+ (0.05*data_rec['flux_mJy'])**2) # add 5% errors
@@ -25,7 +27,6 @@ p0 = [np.log10(0.9*1e16/R0), 60, 0.6, -1.00, 5/3., 2.0]
 # DeltaT = data_rec['mjd'] - min(data_rec['mjd']) + 50 # test!
 # lsq_all = leastsq(res_sumtime, p0, (data_rec['nu_GHz']*1e9, DeltaT, data_rec['flux_mJy'], data_rec['eflux_mJy']), full_output=True)
 # print (lsq_all[0])
-
 
 plt.clf()
 
@@ -74,7 +75,6 @@ for i, mjd in enumerate(mjd_plot):
 		logging.debug('cooling time at 16 GHz (day)', sync.cooling99(lsq[0][0], 16e9)/3600/24)
 		logging.debug('energy in magnetic field', E_single[i,0])
 		#print ('cooling time at 16*(t-300) GHz (day)', sync.cooling_extra(lsq[0][0], 16e9*np.clip(300-t,1,300))/3600/24)
-		plt.pause(0.01)
 
 
 #R0 = 1e15
@@ -86,7 +86,6 @@ plt.ylabel('Flux (mJy)')
 plt.legend()
 plt.show()
 plt.title('p={0:0.1f}'.format(p_electron_single))
-plt.pause(0.01)
 
 plt.savefig('./plots/at2019dsg_radio_singlefit.pdf')
 
@@ -105,16 +104,15 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlabel('R (cm)')
 plt.ylabel('B (G)')
-plt.savefig('./plots/at2019dsg_RB.pdf')
+plt.savefig(os.path.join(plot_dir, 'at2019dsg_RB.pdf'))
 
 plt.clf()
 E_eq = B_single[:,0]**2 / (8*pi) * R_single[:,0]**3 * 4/3.*pi
 plt.plot(mjd_plot-mjd_plot[0], E_eq, '-s')
 plt.xlabel('Time (day since first radio detection)')
 plt.ylabel('Equipartion energy (erg)')
-plt.pause(0.01)
 
-fname = 'at2019dsg_RB_fit_p{0:0.1f}.dat'.format(p_electron_single)
+fname = os.path.join(data_dir, 'at2019dsg_RB_fit_p{0:0.1f}.dat'.format(p_electron_single))
 sjoert.io.writecols(cols=[R_single[:,0],R_single[:,1], B_single[:,0], B_single[:,1]],
 	filename=fname,
 	names=['R_cm', 'eR_cm', 'B_Gauss', 'eB_Gauss'], delimiter=',')
@@ -123,8 +121,6 @@ astropy.io.ascii.write([R_single[:,0],R_single[:,1], B_single[:,0], B_single[:,1
 	fname, names=['R_cm', 'eR_cm', 'B_Gauss', 'eB_Gauss'],
 	formats={'R_cm':'6.3e','eR_cm':'6.3e','B_Gauss':'0.5f', 'eB_Gauss':'0.5f'}, 
 	overwrite=True)
-
-
 
 # ii = argsort(vla0['DeltaT'])
 # print vla0[ii]['DeltaT']
