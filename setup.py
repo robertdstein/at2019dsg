@@ -31,7 +31,7 @@ setuptools.setup(
         "matplotlib",
         "astropy",
         "scipy",
-        "numpy",
+        "numpy>=1.17.0",
         "pandas",
         "requests",
         "catsHTM",
