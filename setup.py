@@ -27,6 +27,7 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=[
         "emcee",
+        "corner",
         "matplotlib",
         "astropy",
         "scipy",
@@ -39,6 +40,7 @@ setuptools.setup(
         "pytest",
         "pytest-cov",
         "nbval",
+        "pylatex",
         "sjoert @ https://github.com/sjoertvv/sjoert/archive/3308c1afe111693da0821b6d8b24a0439f0a648c.zip",
         "k3match @ https://github.com/pschella/k3match/archive/master.zip"
     ],

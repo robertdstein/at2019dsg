@@ -1,4 +1,5 @@
 emcee
+corner
 matplotlib
 astropy
 scipy
@@ -11,4 +12,5 @@ flarestack
 pytest
 pytest-cov
 nbval
+pylatex
 git+https://github.com/pschella/k3match@master

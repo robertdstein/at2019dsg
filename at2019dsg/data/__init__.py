@@ -140,7 +140,6 @@ gamma_deintegrate = np.log(800/0.1)
 
 data_roi = np.load(os.path.join(data_dir, 'LAT_G3_model.npy'), allow_pickle=True, encoding="bytes").flat[0]
 
-
 # SVV addition: 
 radio_rec = astropy.io.ascii.read(os.path.join(data_dir, 'at2019dsg_merged.dat'), format='fixed_width')
 
