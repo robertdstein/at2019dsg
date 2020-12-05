@@ -8,7 +8,7 @@ matrix:
   - python: 3.8
   - python: 3.9
 script:
-  - py.test --cov=at2019dsg --nbval figure_*
+  - py.test --cov=at2019dsg --nbval-lax figure_*
 after_success:
   - coveralls
 notifications:
