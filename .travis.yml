@@ -1,0 +1,13 @@
+language: python
+install:
+- pip install -e .
+matrix:
+  include:
+  - python: 3.6
+  - python: 3.7
+  - python: 3.8
+  - python: 3.9
+script:
+  - py.test --cov=at2019dsg --nbval figure_*
+notifications:
+  email: false
