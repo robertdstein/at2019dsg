@@ -1,7 +1,6 @@
 language: python
 install:
 - pip install -e .
-- sudo apt-get install texlive-base
 matrix:
   include:
   - python: 3.6
