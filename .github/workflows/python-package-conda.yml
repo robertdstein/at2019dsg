@@ -19,7 +19,6 @@ jobs:
     - name: Install dependencies
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
-        cat requirements.txt | xargs -n 1 -L 1 $CONDA/bin/pip install
         $CONDA/bin/pip install -e .
     - name: Test with pytest
       run: |
