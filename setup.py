@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="at2019dsg",
-    version="0.1.0",
+    version="1.0.0",
     author="Robert Stein",
     author_email="robert.stein@desy.de",
     description="Package with core code and data for at2019dsg",
@@ -46,7 +46,7 @@ setuptools.setup(
         "sjoert @ https://github.com/sjoertvv/sjoert/archive/3308c1afe111693da0821b6d8b24a0439f0a648c.zip",
     ],
     package_data={'at2019dsg': [
-        'at2019dsg/data/*']},
+        'data/*']},
     include_package_data=True
 )
 
