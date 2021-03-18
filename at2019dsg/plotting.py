@@ -17,7 +17,7 @@ fig_height = 185./ inch_to_mm
 small_fig_width = 88. / inch_to_mm
 small_fig_height = 130./ inch_to_mm
 
-marker_size=3
+marker_size = 3
 
 dpi = 300
 
@@ -25,4 +25,4 @@ ed_fig_width = 6
 golden_ratio = 1.618
 ed_fig_height = ed_fig_width/golden_ratio
 
-plot_dir = os.path.join(Path(__file__).parent.parent.absolute(), "plots")
+plot_dir = os.path.join(Path(__file__).parent.absolute(), "plots")
