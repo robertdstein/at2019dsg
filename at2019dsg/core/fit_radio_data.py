@@ -87,9 +87,9 @@ plt.legend()
 plt.show()
 plt.title('p={0:0.1f}'.format(p_electron_single))
 
-plt.savefig('./plots/at2019dsg_radio_singlefit.pdf')
+plt.savefig(os.path.join(plot_dir, 'at2019dsg_radio_singlefit.pdf'))
 
-for i in [1,2,3]:
+for i in [1, 2, 3]:
 	logging.info(f"{mjd_plot[i]-mjd_plot[0]}, v/c from R_eq    (spherical emitting region): {(R_single[i,0]-R_single[i-1,0]) / ((mjd_plot[i]-mjd_plot[i-1])*3600*24) / 3e10}")
 logging.info('v/c for neutrino  (spherical emitting region): {(R_single[3,0]-1e15) / ((5)*3600*24) / 3e10}')
 
